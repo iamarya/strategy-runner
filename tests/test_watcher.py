@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from strategy_runner.engiene.watcher import *
-from strategy_runner.exchange.publisher import *
+from strategy_runner.engiene.engine import *
+from strategy_runner.exchange.quote_service import *
 from strategy_runner.models.tick import *
 
 
