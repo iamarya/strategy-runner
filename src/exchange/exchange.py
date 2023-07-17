@@ -5,7 +5,7 @@ from datetime import datetime
 
 class Exchange:
 
-    def getHistoryCandles(symbol: str, duration: Duration, from_time: time, to_time: time) -> list[Candle]:
+    def getHistoryCandles(symbol: str, duration: Duration, from_time: datetime, to_time: datetime) -> list[Candle]:
         # get history candles inclusing from_time and to_time
         pass
 
