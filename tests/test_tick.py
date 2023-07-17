@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from strategy_runner.models.candle import Candle
+from src.models.candle import Candle
 
 
 class TestTick(TestCase):

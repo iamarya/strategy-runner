@@ -1,8 +1,8 @@
 from unittest import TestCase
 
-from strategy_runner.engiene.engine import *
-from strategy_runner.exchange.quote_service import *
-from strategy_runner.models.tick import *
+from src.engiene.engine import *
+from src.exchange.quote_service import *
+from src.models.tick import *
 
 
 class TestWatcher(TestCase):
