@@ -1,6 +1,6 @@
 from src.models.enums import Duration
 
-config = [
+configs = [
     {
         "symbol": "USDT-BTC",
         "interval": Duration._5M,
