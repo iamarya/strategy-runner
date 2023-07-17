@@ -1,6 +1,6 @@
 from strategy_runner.models.candle import Candle
 from strategy_runner.models.enums import Duration
-from time import time
+from datetime import datetime
 
 
 class Exchange:
@@ -15,7 +15,8 @@ class Exchange:
 
 
 class MockExchange(Exchange):
-    def getHistoryCandles(symbol: str, duration: Duration, from_time: time, to_time: time) -> list[Candle]:
+
+    def getHistoryCandles(symbol: str, duration: Duration, from_time: datetime, to_time: datetime) -> list[Candle]:
         candles = []
         candle_time = from_time
         while candle_time <= to_time:
