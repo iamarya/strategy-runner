@@ -1,4 +1,5 @@
 from flask import Flask
+from src.engiene.engine import Engine
 
 app = Flask(__name__)
 
@@ -8,6 +9,6 @@ def hello():
 
 # main driver function
 if __name__ == '__main__':
-    # run() method of Flask class runs the application
-    # on the local development server.
+    engine = Engine()
+    engine.start()
     app.run()
