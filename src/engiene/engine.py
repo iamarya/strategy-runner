@@ -8,7 +8,7 @@ import asyncio
 class Engine(Thread):
 
     def __init__(self) -> None:
-        Thread.__init__(self, daemon=True)
+        Thread.__init__(self, name="engine_thread", daemon=True)
     
     def run(self):
         # get history candles
@@ -29,7 +29,19 @@ class Engine(Thread):
     
     async def get_history_symbol(self, symbol:str):
         print("symbol", symbol)
+    
+    async def get_current_symbol(self, symbol:str):
+        print("symbol", symbol)
+
 
     def run_scheduler(self):
+        asyncio.run(self.get_current_all())
         print("schedluer ran at", datetime.datetime.now())
+
+    async def get_current_all(self):
+        calls = []
+        for config in configs:
+            calls.append(self.get_current_symbol(config["symbol"]))
+        await asyncio.gather(*calls)
+
 
