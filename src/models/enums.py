@@ -1,8 +1,9 @@
 from enum import Enum
 from datetime import timedelta
 
+
 class Duration(Enum):
-    _5M = timedelta(minutes=5)
-    _10M = timedelta(minutes=10)
-    _1HR = timedelta(minutes=60)
-    _1D = timedelta(days=1)
+    M5 = timedelta(minutes=5)
+    M10 = timedelta(minutes=10)
+    HR1 = timedelta(minutes=60)
+    D1 = timedelta(days=1)

@@ -37,7 +37,7 @@ class Engine(Thread):
 
     async def get_current_symbol(self, symbol: str):
         print("get_current_symbol", symbol)
-        self.quote_service.get_currect_candle(symbol, Duration._5M, dt.datetime.now())
+        self.quote_service.get_currect_candle(symbol, Duration.M5, dt.datetime.now())
 
     def run_scheduler(self):
         asyncio.run(self.get_current_all())
