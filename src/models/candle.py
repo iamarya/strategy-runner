@@ -9,3 +9,6 @@ class Candle:
         self.o = o
         self.c = c
         self.v = v
+
+    def __repr__(self) -> str:
+        return str([self.t, self.h, self.l, self.o, self.c])
