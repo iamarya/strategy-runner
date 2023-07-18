@@ -1,5 +1,4 @@
 import threading
-from src.engiene.engine_config import configs
 import schedule
 import time
 from datetime import datetime
@@ -9,9 +8,10 @@ from src.models.enums import Duration
 
 class Engine(threading.Thread):
 
-    def __init__(self) -> None:
+    def __init__(self, configs) -> None:
         threading.Thread.__init__(self, name="engine_thread", daemon=True)
         self.quote_service = QuoteService()
+        self.configs = configs
 
     def run(self):
         # get history candles
@@ -26,8 +26,9 @@ class Engine(threading.Thread):
     def get_history_all(self):
         print("inside get_history_all")
         calls = []
-        for config in configs["symbols"]:
-            calls.append(threading.Thread(target=self.get_history_symbol, args=(config["symbol"],)))
+        for config in self.configs["symbols"]:
+            calls.append(threading.Thread(
+                target=self.get_history_symbol, args=(config["symbol"],), daemon=True))
         for call in calls:
             call.start()
         for call in calls:
@@ -38,17 +39,20 @@ class Engine(threading.Thread):
 
     def get_current_symbol(self, symbol: str):
         print("get_current_symbol", symbol)
-        self.quote_service.get_currect_candle(symbol, Duration.M5, datetime.now())
+        self.quote_service.get_currect_candle(
+            symbol, Duration.M5, datetime.now())
 
     def run_scheduler(self):
-        self.get_current_all()
         print("schedluer ran at", datetime.now())
+        self.get_current_all()
+        # self.run_strategy_all()
 
     def get_current_all(self):
         calls = []
         now = time.time()
-        for config in configs["symbols"]:
-            calls.append(threading.Thread(target=self.get_current_symbol, args=(config["symbol"],)))
+        for config in self.configs["symbols"]:
+            calls.append(threading.Thread(
+                target=self.get_current_symbol, args=(config["symbol"],), daemon=True))
         for call in calls:
             call.start()
         for call in calls:
