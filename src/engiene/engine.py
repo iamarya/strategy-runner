@@ -2,14 +2,17 @@ from threading import Thread
 from src.engiene.engine_config import configs
 import schedule
 import time
-import datetime
+import datetime as dt
 import asyncio
+from src.exchange.quote_service import QuoteService
+from src.models.enums import Duration
 
 
 class Engine(Thread):
 
     def __init__(self) -> None:
         Thread.__init__(self, name="engine_thread", daemon=True)
+        self.quote_service = QuoteService()
 
     def run(self):
         # get history candles
@@ -22,21 +25,23 @@ class Engine(Thread):
             time.sleep(1)
 
     async def get_history_all(self):
-        print("inside getHistoryAll")
+        print("inside get_history_all")
         calls = []
         for config in configs:
             calls.append(self.get_history_symbol(config["symbol"]))
         await asyncio.gather(*calls)
 
     async def get_history_symbol(self, symbol: str):
-        print("symbol", symbol)
+        print("get_history_symbol", symbol)
+        return
 
     async def get_current_symbol(self, symbol: str):
-        print("symbol", symbol)
+        print("get_current_symbol", symbol)
+        self.quote_service.get_currect_candle(symbol, Duration._5M, dt.datetime.now())
 
     def run_scheduler(self):
         asyncio.run(self.get_current_all())
-        print("schedluer ran at", datetime.datetime.now())
+        print("schedluer ran at", dt.datetime.now())
 
     async def get_current_all(self):
         calls = []

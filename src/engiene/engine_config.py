@@ -4,6 +4,7 @@ configs = [
     {
         "symbol": "USDT-BTC",
         "interval": Duration._5M,
-        "indicator": []
+        "indicator": [],
+        "history": 0
     }
 ]
