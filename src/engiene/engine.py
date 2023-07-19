@@ -3,7 +3,7 @@ import schedule
 import time
 from datetime import datetime
 from src.exchange.quote_service import QuoteService
-from src.models.enums import INTERVAL_ENUM
+from src.models.enums import INTERVAL_TYPE
 
 
 class Engine(threading.Thread):
@@ -41,7 +41,7 @@ class Engine(threading.Thread):
     def get_current_symbol(self, config, current_time):
         print("get_current_symbol", config["symbol"])
         self.quote_service.get_candles(
-            config["symbol"], config["current_intervals"][0], current_time, config["current_candles"])
+            config["symbol"], config["current_intervals"][0], current_time, config["current_candles_no"])
 
     def run_scheduler(self):
         print("schedluer ran at", datetime.now())
