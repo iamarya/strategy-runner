@@ -3,7 +3,7 @@ import schedule
 import time
 from datetime import datetime
 from src.exchange.quote_service import QuoteService
-from src.models.enums import Duration
+from src.models.enums import INTERVAL_ENUM
 
 
 class Engine(threading.Thread):

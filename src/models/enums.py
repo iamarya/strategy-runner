@@ -1,9 +1,18 @@
 from enum import Enum
 from datetime import timedelta
 
+class Interval:
 
-class Duration(Enum):
-    M5 = {"time_delta": timedelta(minutes=5), "secs": 300}
-    M10 = {"time_delta": timedelta(minutes=10), "secs": 600}
-    HR1 = {"time_delta": timedelta(hours=1), "secs": 3600}
-    D1 = {"time_delta": timedelta(days=1), "secs": 86400}
+    def __init__(self, time_delta, secs:int) -> None:
+        self.time_delta = time_delta
+        self.secs = secs
+
+class INTERVAL_ENUM(Enum):
+
+    M5 = Interval(timedelta(minutes=5), 300)
+    M10 = Interval(timedelta(minutes=10), 600)
+    HR1 = Interval(timedelta(hours=1), 3600)
+    D1 = Interval(timedelta(days=1), 86400)
+
+
+    
