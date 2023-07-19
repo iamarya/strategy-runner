@@ -7,8 +7,11 @@ class QuoteService:
     def __init__(self):
         self.exchange = MockExchange()
 
-    def get_currect_candle(self, symbol:str, duration: Duration, time:datetime):
-        candles = self.exchange.get_current_candles(symbol, duration)
+    def get_candles(self, symbol:str, duration: Duration, current_time:datetime, no_candles:int):
+        # write logic to generate from and to time #todo
+        from_time = None
+        to_time = None
+        candles = self.exchange.get_candles(symbol, duration, from_time, to_time)
         print(candles)
 
 

@@ -25,34 +25,35 @@ class Engine(threading.Thread):
 
     def get_history_all(self):
         print("inside get_history_all")
+        current_time= datetime.now()
         calls = []
         for config in self.configs["symbols"]:
             calls.append(threading.Thread(
-                target=self.get_history_symbol, args=(config["symbol"],), daemon=True))
+                target=self.get_history_symbol, args=(config, current_time), daemon=True))
         for call in calls:
             call.start()
         for call in calls:
             call.join()
 
-    def get_history_symbol(self, symbol: str):
-        print("get_history_symbol", symbol)
+    def get_history_symbol(self, config, current_time):
+        print("get_history_symbol", config["symbol"])
 
-    def get_current_symbol(self, symbol: str):
-        print("get_current_symbol", symbol)
-        self.quote_service.get_currect_candle(
-            symbol, Duration.M5, datetime.now())
+    def get_current_symbol(self, config, current_time):
+        print("get_current_symbol", config["symbol"])
+        self.quote_service.get_candles(
+            config["symbol"], config["current_intervals"][0], current_time, config["current_candles"])
 
     def run_scheduler(self):
         print("schedluer ran at", datetime.now())
         self.get_current_all()
-        # self.run_strategy_all()
+        # self.run_strategy_all() #todo
 
     def get_current_all(self):
         calls = []
-        now = time.time()
+        current_time= datetime.now()
         for config in self.configs["symbols"]:
             calls.append(threading.Thread(
-                target=self.get_current_symbol, args=(config["symbol"],), daemon=True))
+                target=self.get_current_symbol, args=(config, current_time), daemon=True))
         for call in calls:
             call.start()
         for call in calls:
