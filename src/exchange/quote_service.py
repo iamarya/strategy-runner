@@ -14,7 +14,7 @@ class QuoteService:
         candles = self.exchange.get_candles(symbol, interval.value.secs, from_time, to_time)
         # if len(candles) > no_candles:
         #     candles = candles [-no_candles:]
-        print(candles)
+        return candles
 
 
  

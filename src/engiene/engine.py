@@ -14,7 +14,7 @@ class Engine(threading.Thread):
         self.configs = configs
 
     def run(self):
-        # get history candles
+        # get history candles and indicators
         self.get_history_all()
         # configure scheduler
         # schedule.every(5).minutes.at(":05").do(self.run_scheduler)
@@ -36,12 +36,15 @@ class Engine(threading.Thread):
             call.join()
 
     def get_history_symbol(self, config, current_time):
+        # get history candles and indicators per symbol and add to state
         print("get_history_symbol", config["symbol"])
 
     def get_current_symbol(self, config, current_time):
         print("get_current_symbol", config["symbol"])
-        self.quote_service.get_candles(
+        # get current candles and indicators and add to state
+        curr_candles = self.quote_service.get_candles(
             config["symbol"], config["current_intervals"][0], current_time, config["current_candles_no"])
+        print(curr_candles)
 
     def run_scheduler(self):
         print("schedluer ran at", datetime.now())
