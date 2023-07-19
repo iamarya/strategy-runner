@@ -8,9 +8,8 @@ class QuoteService:
         self.exchange = MockExchange()
 
     def get_candles(self, symbol:str, duration: Duration, current_time:datetime, no_candles:int):
-        # write logic to generate from and to time #todo
-        from_time = None
-        to_time = None
+        from_time = current_time.timestamp() - duration.value["secs"] * no_candles
+        to_time = current_time.timestamp()
         candles = self.exchange.get_candles(symbol, duration, from_time, to_time)
         print(candles)
 

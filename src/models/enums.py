@@ -3,7 +3,7 @@ from datetime import timedelta
 
 
 class Duration(Enum):
-    M5 = timedelta(minutes=5)
-    M10 = timedelta(minutes=10)
-    HR1 = timedelta(minutes=60)
-    D1 = timedelta(days=1)
+    M5 = {"time_delta": timedelta(minutes=5), "secs": 300}
+    M10 = {"time_delta": timedelta(minutes=10), "secs": 600}
+    HR1 = {"time_delta": timedelta(hours=1), "secs": 3600}
+    D1 = {"time_delta": timedelta(days=1), "secs": 86400}

@@ -14,6 +14,7 @@ class MockExchange(Exchange):
 
     def get_candles(self, symbol: str, duration: Duration, from_time:datetime, to_time:datetime) -> list[Candle]:
         candles = []
+        print(from_time, to_time)
         candles.append(Candle(None, h=10, l=2, o=4, c=6, v=100))
         candles.append(Candle(None, h=10, l=2, o=4, c=6, v=100))
         return candles
