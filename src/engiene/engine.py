@@ -3,6 +3,8 @@ import schedule
 import time
 from datetime import datetime
 from src.exchange.quote_service import QuoteService
+from src.exchange.candle_manager import CandleManager
+from src.models.market_watch import MarketWatch
 from src.models.enums import INTERVAL_TYPE
 
 
@@ -11,6 +13,8 @@ class Engine(threading.Thread):
     def __init__(self, configs) -> None:
         threading.Thread.__init__(self, name="engine_thread", daemon=True)
         self.quote_service = QuoteService()
+        self.market_watch = MarketWatch()
+        self.candle_manager = CandleManager(self.market_watch)
         self.configs = configs
 
     def run(self):
@@ -25,7 +29,7 @@ class Engine(threading.Thread):
 
     def get_history_all(self):
         print("inside get_history_all")
-        current_time= datetime.now()
+        current_time = datetime.now()
         calls = []
         for config in self.configs["symbols"]:
             calls.append(threading.Thread(
@@ -45,6 +49,8 @@ class Engine(threading.Thread):
         curr_candles = self.quote_service.get_candles(
             config["symbol"], config["current_intervals"][0], current_time, config["current_candles_no"])
         print(curr_candles)
+        self.candle_manager.create_upadte_candles(curr_candles)
+        # self.indicator_manager.create_upadte_indicators(curr_candles)
 
     def run_scheduler(self):
         print("schedluer ran at", datetime.now())
@@ -53,7 +59,7 @@ class Engine(threading.Thread):
 
     def get_current_all(self):
         calls = []
-        current_time= datetime.now()
+        current_time = datetime.now()
         for config in self.configs["symbols"]:
             calls.append(threading.Thread(
                 target=self.get_current_symbol, args=(config, current_time), daemon=True))
