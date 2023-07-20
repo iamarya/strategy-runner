@@ -3,7 +3,7 @@ import schedule
 import time
 from datetime import datetime
 from src.exchange.quote_service import QuoteService
-from src.exchange.candle_manager import CandleManager
+from src.engiene.candle_manager import CandleManager
 from src.models.market_watch import MarketWatch
 from src.models.enums import INTERVAL_TYPE
 
