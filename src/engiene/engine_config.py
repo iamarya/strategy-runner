@@ -1,4 +1,10 @@
-from src.models.enums import INTERVAL_TYPE, EXCAHNGE_TYPE
+from src.models.enums import *
+
+class EngineConfig:
+
+    def __init__(self) -> None:
+        self.configs = configs
+
 
 configs = {
     "backtest": False, # flag changes behaviour of engine
@@ -16,13 +22,13 @@ configs = {
     "strategies": [{
             # will be used for backtest and paper trading
             "strategy": "S1",
-            "db": IN_MEMORY, #IN_MEMORY or GSHEET
+            "db": DB_TYPE.IN_MEMORY, #IN_MEMORY or GSHEET
             "exchange_type": EXCAHNGE_TYPE.MOCK_EXCAHNGE
         },
         {
             # will be used for live trading
             "strategy": "S2",
-            "db": GSHEET,
+            "db": DB_TYPE.G_SHEET,
             "exchange_type": EXCAHNGE_TYPE.COINBASE_EXCHANGE
         }]
 }

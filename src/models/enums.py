@@ -20,6 +20,10 @@ class EXCAHNGE_TYPE(Enum):
     BINANCE_EXCAHNGE = 3
     ZERODHA_EXCHANGE = 4
 
+class DB_TYPE(Enum):
+    IN_MEMORY = 1 
+    G_SHEET = 2
+
 
 
     

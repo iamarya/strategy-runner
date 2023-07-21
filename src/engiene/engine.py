@@ -13,7 +13,7 @@ class Engine(threading.Thread):
     def __init__(self, configs) -> None:
         threading.Thread.__init__(self, name="engine_thread", daemon=True)
         self.quote_service = QuoteService()
-        self.market_watch = MarketWatch()
+        self.market_watch = MarketWatch(configs)
         self.candle_manager = CandleManager(self.market_watch)
         self.configs = configs
 
