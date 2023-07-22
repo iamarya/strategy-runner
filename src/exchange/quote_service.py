@@ -8,16 +8,14 @@ from src.exchange.exchange import Exchange, MockExchange
 class QuoteService:
 
     def __init__(self):
-        self.exchange:Exchange = MockExchange()
+        self.exchange: Exchange = MockExchange()
 
-    def get_candles(self, symbol:str, interval: INTERVAL_TYPE, current_time:datetime, no_candles:int) -> list[Candle]: 
-        from_time = current_time.timestamp() - interval.value.secs
-        to_time = current_time.timestamp()
+    def get_candles(self, symbol: str, interval: INTERVAL_TYPE, current_time: datetime, no_candles: int) -> list[Candle]:
+        from_time = int(current_time.timestamp() - interval.value)  # in secs
+        to_time = int(current_time.timestamp())
         # check any corner case if it will return 3 candles when expecting 2 candles
-        candles = self.exchange.get_candles(symbol, interval.value.secs, from_time, to_time)
+        candles = self.exchange.get_candles(
+            symbol, interval, from_time, to_time)
         # if len(candles) > no_candles:
         #     candles = candles [-no_candles:]
         return candles
-
-
- 

@@ -3,6 +3,8 @@ from src.models.enums import INTERVAL_TYPE
 from src.engiene.engine_config import EngineConfig, SymbolConfig
 import pandas as pd
 
+from src.models.event import CandleEvent
+
 columns = ['time', 'open', 'high', 'low', 'close', 'volume']
 
 
@@ -16,7 +18,7 @@ class MarketWatch:
             # , index=range(10) needed if initial size
             df = pd.DataFrame(columns=columns)
             df.set_index("time", inplace=True)
-            mw_item[INTERVAL_TYPE.M5] = df
+            mw_item[config.current_intervals()[0]] = df
             # mw_item["length"] = 0
             mw_item["last_updated_time"] = None
             self.ma[config.symbol()] = mw_item
@@ -30,31 +32,30 @@ class MarketWatch:
     def get_last_updated(self, symbol: str):
         return self.ma[symbol].last_updated_time
 
-    def add_update_candles(self, symbol, interval, candles: list[Candle]) -> dict:
+    def add_update_candles(self, symbol: str, interval: INTERVAL_TYPE, candles: list[Candle]) -> CandleEvent:
         # improvment can be done like add all row at a time
         # somehow also comapring for updated items if needed else just replace everything will be easy
         # current implimentation is comparing row by row
         df = self.ma[symbol][interval]
-        response = {"symbol": symbol, "interval": interval,
-                    "upadted": [], "inserted": []}
+        candle_event = CandleEvent(symbol, interval)
         for candle in candles:
             # last_index = self.ma[symbol]["length"]
             wo_time = [candle.o, candle.h, candle.l, candle.c, candle.v]
             if candle.t in df.index:
                 if df.loc[candle.t, columns[1:]].values.flatten().tolist() != wo_time:
                     # updated
-                    response['upadted'].append(candle.t)
+                    candle_event.add_to_updated(candle.t)
                     df.loc[candle.t, columns[1:]] = wo_time
             else:
                 # inserted
-                response['inserted'].append(candle.t)
+                candle_event.add_to_inserted(candle.t)
                 df.loc[candle.t, columns[1:]] = wo_time
             # self.ma[symbol]["length"] = last_index+1
         self.ma[symbol]["last_updated_time"] = candles[-1].t
         self.ma[symbol]["ltp"] = candles[-1].c
         # print(self.ma)
         # print(response)
-        return response
+        return candle_event
 
 
 '''

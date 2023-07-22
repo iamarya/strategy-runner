@@ -1,39 +1,34 @@
 from enum import Enum
-from datetime import timedelta
 
-class Interval:
-
-    def __init__(self, time_delta, secs:int) -> None:
-        self.time_delta = time_delta
-        self.secs = secs
 
 class INTERVAL_TYPE(Enum):
-
-    M5 = Interval(timedelta(minutes=5), 300)
-    M10 = Interval(timedelta(minutes=10), 600)
-    HR1 = Interval(timedelta(hours=1), 3600)
-    D1 = Interval(timedelta(days=1), 86400)
+    S5 = 5  # testing purpose
+    M5 = 300
+    M10 = 600
+    HR1 = 3600
+    D1 = 86400
 
     def __repr__(self) -> str:
         return self.name
+
 
 class EXCAHNGE_TYPE(Enum):
     MOCK_EXCAHNGE = 1
     COINBASE_EXCHANGE = 2
     BINANCE_EXCAHNGE = 3
     ZERODHA_EXCHANGE = 4
+
     def __repr__(self) -> str:
         return self.name
+
 
 class DB_TYPE(Enum):
-    IN_MEMORY = 1 
+    IN_MEMORY = 1
     G_SHEET = 2
+
     def __repr__(self) -> str:
         return self.name
-    
+
+
 class INDICATOR_TYPE(Enum):
     pass
-
-
-
-    

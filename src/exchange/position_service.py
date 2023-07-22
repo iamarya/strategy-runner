@@ -8,9 +8,4 @@ from src.exchange.exchange import Exchange, MockExchange
 class PositionService:
 
     def __init__(self):
-        self.exchange:Exchange = MockExchange()
-
-    
-
-
- 
+        self.exchange: Exchange = MockExchange()

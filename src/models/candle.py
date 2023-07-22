@@ -1,8 +1,9 @@
 from datetime import datetime
 
+
 class Candle:
 
-    def __init__(self, t:datetime, o:float, h:float, l:float, c:float, v:int) -> None:
+    def __init__(self, t: int, o: float, h: float, l: float, c: float, v: int) -> None:
         self.t = t
         self.h = h
         self.l = l
