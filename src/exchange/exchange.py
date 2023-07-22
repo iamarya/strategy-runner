@@ -19,7 +19,7 @@ class MockExchange(Exchange):
         current_candle_time = math.floor(from_time/inetval) * inetval
         while current_candle_time <= to_time:
             candles.append(Candle(current_candle_time,
-                           h=10, l=2, o=4, c=6, v=100))
+                           o=6, h=12, l=4, c=8, v=100))
             current_candle_time = current_candle_time+inetval
         return candles
 

@@ -2,7 +2,7 @@ from datetime import datetime
 
 class Candle:
 
-    def __init__(self, t:datetime, h:float, l:float, o:float, c:float, v:int) -> None:
+    def __init__(self, t:datetime, o:float, h:float, l:float, c:float, v:int) -> None:
         self.t = t
         self.h = h
         self.l = l
@@ -11,4 +11,4 @@ class Candle:
         self.v = v
 
     def __repr__(self) -> str:
-        return str([self.t, self.h, self.l, self.o, self.c])
+        return str([self.t, self.o, self.h, self.l, self.c])

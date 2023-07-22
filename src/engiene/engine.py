@@ -50,8 +50,8 @@ class Engine(threading.Thread):
         curr_candles = self.quote_service.get_candles(
             config.symbol(), config.current_intervals()[0], current_time, config.current_candles_no())
         print(curr_candles)
-        self.candle_manager.create_upadte_candles(curr_candles)
-        # self.indicator_manager.create_upadte_indicators(curr_candles)
+        self.candle_manager.create_upadte_candles(curr_candles, config)
+        # self.indicator_manager.create_upadte_indicators(curr_candles, config)
 
     def run_scheduler(self):
         print("schedluer ran at", datetime.now())
