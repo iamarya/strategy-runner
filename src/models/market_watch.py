@@ -1,8 +1,10 @@
 from src.models.enums import INTERVAL_TYPE
+from src.engiene.engine_config import EngineConfig, SymbolConfig
 
 class MarketWatch:
-    def __init__(self, config) -> None:
+    def __init__(self, configs:EngineConfig) -> None:
         self.ma = dict()
+        self.configs = configs
         # setup initial ma using config
     
     def get_ltp(self, symbol:str) -> float:

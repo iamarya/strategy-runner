@@ -24,6 +24,9 @@ class DB_TYPE(Enum):
     IN_MEMORY = 1 
     G_SHEET = 2
 
+class INDICATOR_TYPE(Enum):
+    pass
+
 
 
     
