@@ -1,6 +1,6 @@
 from flask import Flask
-from src.engiene.engine import Engine
-from src.engiene.engine_config import configs
+from engiene.engine import Engine
+from engiene.engine_config import configs
 
 app = Flask(__name__)
 

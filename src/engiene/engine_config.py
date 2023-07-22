@@ -1,4 +1,4 @@
-from src.models.enums import *
+from models.enums import *
 
 configs = {
     "backtest": False,  # flag changes behaviour of engine

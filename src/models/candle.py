@@ -12,4 +12,4 @@ class Candle:
         self.v = v
 
     def __repr__(self) -> str:
-        return str([self.t, self.o, self.h, self.l, self.c])
+        return str([self.t, self.o, self.h, self.l, self.c, self.v])

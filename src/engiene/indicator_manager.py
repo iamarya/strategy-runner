@@ -1,5 +1,5 @@
-from src.models.candle import Candle
-from src.models.market_watch import MarketWatch
+from models.candle import Candle
+from models.market_watch import MarketWatch
 
 
 class IndicatorManager:

@@ -1,9 +1,9 @@
-from src.models.candle import Candle
-from src.models.enums import INTERVAL_TYPE
-from src.engiene.engine_config import EngineConfig, SymbolConfig
+from models.candle import Candle
+from models.enums import INTERVAL_TYPE
+from engiene.engine_config import EngineConfig, SymbolConfig
 import pandas as pd
 
-from src.models.event import CandleEvent
+from models.event import CandleEvent
 
 columns = ['time', 'open', 'high', 'low', 'close', 'volume']
 

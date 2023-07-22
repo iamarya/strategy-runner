@@ -2,14 +2,14 @@ import threading
 import schedule
 import time
 from datetime import datetime
-from src.engiene.indicator_manager import IndicatorManager
-from src.engiene.strategy_manager import StrategyManager
-from src.exchange.quote_service import QuoteService
-from src.engiene.candle_manager import CandleManager
-from src.models.market_watch import MarketWatch
-from src.models.enums import INTERVAL_TYPE
-from src.engiene.engine_config import EngineConfig, SymbolConfig
-from src.strategy.strategy import Strategy
+from engiene.indicator_manager import IndicatorManager
+from engiene.strategy_manager import StrategyManager
+from exchange.quote_service import QuoteService
+from engiene.candle_manager import CandleManager
+from models.market_watch import MarketWatch
+from models.enums import INTERVAL_TYPE
+from engiene.engine_config import EngineConfig, SymbolConfig
+from strategy.strategy import Strategy
 
 
 class Engine(threading.Thread):

@@ -1,7 +1,7 @@
-from src.engiene.engine_config import SymbolConfig
-from src.models.candle import Candle
-from src.models.event import CandleEvent
-from src.models.market_watch import MarketWatch
+from engiene.engine_config import SymbolConfig
+from models.candle import Candle
+from models.event import CandleEvent
+from models.market_watch import MarketWatch
 
 
 class CandleManager:
