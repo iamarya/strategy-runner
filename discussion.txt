@@ -1,0 +1,11 @@
+when to call strategy after all current finish or by symbol? 
+what will happen if need to depend on another?
+during backtest need same like all history completed then call strategy?
+
+multithreading for strategy separatly? therad per strategy or per strategy per symbol?
+
+which strategy needs what symbol or send each symbol then strategy decides if need to use?
+
+
+
+
