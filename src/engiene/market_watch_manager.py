@@ -9,11 +9,27 @@ default_columns = ['time', 'open', 'high', 'low', 'close', 'volume']
 
 pd.options.mode.copy_on_write = False
 
+'''
+Example:
+market_watch = {
+    "ETH": {
+        "symbol": "ETH",
+        M5: DataFrame,
+        D1: DataFrame,
+        "indicators": [i1, i2], #may be not needed
+        "ltp": 123,
+        "last_updated_time": 12222987654
+        "length": 10 
+    }
+}
 
-class MarketWatch:
+'''
+
+
+class MarketWatchManager:
 
     def __init__(self, configs: EngineConfig) -> None:
-        self.ma = dict()
+        self.market_watch = dict()
         # setup initial ma using config
         for config in configs.get_all_configs():
             mw_item = dict()
@@ -29,28 +45,29 @@ class MarketWatch:
                 mw_item[interval] = df
             mw_item["length"] = 0
             mw_item["last_updated_time"] = None
-            self.ma[config.symbol()] = mw_item
+            mw_item["symbol"] = config.symbol()
+            self.market_watch[config.symbol()] = mw_item
 
     def get_ltp(self, symbol: str) -> float:
-        return self.ma[symbol].ltp
+        return self.market_watch[symbol].ltp
 
     def get_candles(self, symbol: str, interval: INTERVAL_TYPE) -> pd.DataFrame:
-        return self.ma[symbol][interval]
+        return self.market_watch[symbol][interval]
 
     def get_last_updated(self, symbol: str):
-        return self.ma[symbol].last_updated_time
+        return self.market_watch[symbol].last_updated_time
 
     def get_length(self, symbol: str):
-        return self.ma[symbol].length
+        return self.market_watch[symbol].length
 
     def add_update_candles(self, symbol: str, interval: INTERVAL_TYPE, candles: list[Candle]) -> CandleEvent:
         # improvment can be done like add all row at a time
         # somehow also comapring for updated items if needed else just replace everything will be easy
         # current implimentation is comparing row by row
-        df = self.ma[symbol][interval]
+        df = self.market_watch[symbol][interval]
         candle_event = CandleEvent(symbol, interval)
         for candle in candles:
-            last_index = self.ma[symbol]["length"]
+            last_index = self.market_watch[symbol]["length"]
             wo_time = [candle.o, candle.h, candle.l, candle.c, candle.v]
             if candle.t in df.index:
                 if df.loc[candle.t, default_columns[1:]].values.flatten().tolist() != wo_time:
@@ -61,26 +78,20 @@ class MarketWatch:
                 # inserted
                 candle_event.add_to_inserted(candle.t)
                 df.loc[candle.t, default_columns[1:]] = wo_time
-                self.ma[symbol]["length"] = last_index+1
-        self.ma[symbol]["last_updated_time"] = candles[-1].t
-        self.ma[symbol]["ltp"] = candles[-1].c
+                self.market_watch[symbol]["length"] = last_index+1
+        self.market_watch[symbol]["last_updated_time"] = candles[-1].t
+        self.market_watch[symbol]["ltp"] = candles[-1].c
         # print(self.ma)
         # print("candle_event", candle_event)
         return candle_event
 
-
-'''
-Example:
-{
-    "ETH": {
-        "symbol": "ETH", # not added yet
-        M5: None: DataFrame,
-        D1: None,
-        "indicators": [i1, i2], #may be not needed
-        "ltp": 123,
-        "last_updated_time": 12222987654
-        "length": 10 # commented
-    }
-}
-
-'''
+    def generate_candles(self):
+        pass
+    
+    '''
+    Used for back testing to generate all candle events for history candles
+    '''
+    def synthesize_all_candle_events(self) -> list[CandleEvent]:
+        # get all intervals for history candles
+        self.market_watch
+        return []

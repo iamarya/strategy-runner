@@ -5,8 +5,7 @@ from datetime import datetime
 from src.engiene.indicator_manager import IndicatorManager
 from src.engiene.strategy_manager import StrategyManager
 from src.exchange.quote_service import QuoteService
-from src.engiene.candle_manager import CandleManager
-from src.models.market_watch import MarketWatch
+from src.engiene.market_watch_manager import MarketWatchManager
 from src.models.enums import INTERVAL_TYPE
 from src.engiene.engine_config import EngineConfig, SymbolConfig
 from src.strategy.strategy import Strategy
@@ -17,9 +16,8 @@ class Engine(threading.Thread):
     def __init__(self, configs) -> None:
         threading.Thread.__init__(self, name="engine_thread", daemon=True)
         self.configs = EngineConfig(configs)
-        self.market_watch = MarketWatch(self.configs)
-        self.candle_manager = CandleManager(self.market_watch)
-        self.indicator_manager = IndicatorManager(self.market_watch)
+        self.market_watch_manager = MarketWatchManager(self.configs)
+        self.indicator_manager = IndicatorManager(self.market_watch_manager)
         self.quote_service = QuoteService()
         self.strategy_manager = StrategyManager(Strategy())
 
@@ -34,7 +32,7 @@ class Engine(threading.Thread):
                 schedule.run_pending()
                 time.sleep(1)
         if self.configs.is_backtest():
-            synthesized_all_candle_events = self.candle_manager.synthesize_all_candle_events()
+            synthesized_all_candle_events = self.market_watch_manager.synthesize_all_candle_events()
             for candle_events in synthesized_all_candle_events:
                 self.strategy_manager.notify(candle_events)
 
@@ -55,17 +53,15 @@ class Engine(threading.Thread):
         print("get_history_symbol", config.symbol())
         # candle_events = []
         for interval in config.history_intervals():
-            curr_candles = self.quote_service.get_candles(
+            history_candles = self.quote_service.get_candles(
                 config.symbol(), interval, current_time, config.history_candles_no())
             # print(curr_candles)
-            candle_event = self.candle_manager.create_upadte_candles(interval,
-                curr_candles, config.symbol())
-            # candle_events.append(candle_event)
-            # add update indicators for given interval
+            candle_event = self.market_watch_manager.add_update_candles(config.symbol(), interval,
+                                                                     history_candles)
             for indicator in config.indicators():
-                self.indicator_manager.create_upadte_indicators(candle_event, indicator)
-        # print(candle_events)
-        # self.strategy_manager.notify(candle_events)
+                self.indicator_manager.create_upadte_indicators(
+                    candle_event, indicator)
+
 
     def get_current_symbol(self, config: SymbolConfig, current_time):
         print("get_current_symbol", config.symbol())
@@ -75,12 +71,13 @@ class Engine(threading.Thread):
             curr_candles = self.quote_service.get_candles(
                 config.symbol(), interval, current_time, config.current_candles_no())
             # print(curr_candles)
-            candle_event = self.candle_manager.create_upadte_candles(interval,
-                curr_candles, config.symbol())
+            candle_event = self.market_watch_manager.add_update_candles(config.symbol(), interval,
+                                                                     curr_candles)
             candle_events.append(candle_event)
             # add update indicators for given interval
             for indicator in config.indicators():
-                self.indicator_manager.create_upadte_indicators(candle_event, indicator)
+                self.indicator_manager.create_upadte_indicators(
+                    candle_event, indicator)
         # print(candle_events)
         self.strategy_manager.notify(candle_events)
 

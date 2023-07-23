@@ -1,3 +1,4 @@
+from src.strategy.swing_trading_strategy import SwingTradingStrategy
 from src.models.enums import *
 from src.indicators.sma import SMA
 from src.indicators.indicator import Indicator
@@ -13,7 +14,8 @@ configs = {
         "history_intervals_generated": [],
         "history_candles_no": 10,
         "indicators": [SMA(5)],
-        "exchange_type": EXCAHNGE_TYPE.MOCK_EXCAHNGE}],
+        "exchange_type": EXCAHNGE_TYPE.MOCK_EXCAHNGE
+    }],
     "strategies": [{
         # will be used for backtest and paper trading
         "strategy": "S1",
@@ -21,14 +23,14 @@ configs = {
         "exchange_type": EXCAHNGE_TYPE.MOCK_EXCAHNGE},
         {
             # will be used for live trading
-            "strategy": "S2",
+            "strategy": SwingTradingStrategy(),
             "db": DB_TYPE.G_SHEET,
             "exchange_type": EXCAHNGE_TYPE.COINBASE_EXCHANGE
     }]
 }
 # backtest means some mock exchange/ real exchange(quote) will be used and strategies will be use inmemory db
 # and mock order service
-# papaer trade means strategy will use inmemory/gsheet and mock order serice
+# papaer trade means strategy will use db as inmemory/gsheet and mock order serice
 # live trade will use gsheet and actual order service
 
 
