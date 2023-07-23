@@ -91,12 +91,12 @@ class MarketWatchManager:
     '''
     Used for back testing to generate all candle events for history candles
     list[CandleEvent] is for a perticular time for all intervals for single symbol
-    list[list[CandleEvent]] for all the time fo for all the intervals for single symbol
+    list[list[CandleEvent]] is for a perticular time for all intervals for all symbol
+    list[list[list[CandleEvent]]] is for a all time for all intervals for all symbol 
     '''
 
-    def synthesize_all_candle_events(self, symbol: str, inatervals: list[INTERVAL_TYPE]) -> list[list[CandleEvent]]:
+    def synthesized_all_candle_events_all_time(self) -> list[list[list[CandleEvent]]]:
         # get all intervals for history candles
 
         # getsmallest interval
-        self.market_watch.get(symbol)
         return []  # list of list of candle_event

@@ -1,6 +1,6 @@
 from flask import Flask
 from src.engiene.engine import Engine
-from src.engiene.engine_config import configs
+from src.engiene.engine_config import engine_config
 
 app = Flask(__name__)
 
@@ -10,6 +10,6 @@ def hello():
 
 # main driver function
 if __name__ == '__main__':
-    engine = Engine(configs)
+    engine = Engine(engine_config)
     engine.start()
     app.run()

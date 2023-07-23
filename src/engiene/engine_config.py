@@ -3,10 +3,10 @@ from src.models.enums import *
 from src.indicators.sma import SMA
 from src.indicators.indicator import Indicator
 
-configs = {
+engine_config = {
     "backtest": False,  # flag changes behaviour of engine
     "symbols": [{
-        "symbol": "BTC",
+        "symbol": "BTC", # todo add multiple symbools here for same config 
         "current_intervals": [INTERVAL_TYPE.S5],
         "current_intervals_generated": [INTERVAL_TYPE.HR1, INTERVAL_TYPE.D1],
         "current_candles_no": 2,
@@ -34,6 +34,7 @@ configs = {
 # live trade will use gsheet and actual order service
 
 
+# todo separate symbol name from symbol_config so that same config can be reused
 class SymbolConfig:
     def __init__(self, config) -> None:
         self.config = config
@@ -67,17 +68,17 @@ class SymbolConfig:
 
 
 class EngineConfig:
-    def __init__(self, configs) -> None:
-        self.configs = configs
+    def __init__(self, engine_config) -> None:
+        self.engine_config = engine_config
 
     def is_backtest(self) -> bool:
-        return self.configs["backtest"]
+        return self.engine_config["backtest"]
 
     def get_all_symbols(self) -> list[str]:
-        return [config["symbol"] for config in self.configs["symbols"]]
+        return [config["symbol"] for config in self.engine_config["symbols"]]
 
     def get_symbol_config(self, symbol) -> SymbolConfig:
-        return [SymbolConfig(config) for config in self.configs["symbols"] if config["symbol"] == symbol][0]
+        return [SymbolConfig(config) for config in self.engine_config["symbols"] if config["symbol"] == symbol][0]
 
     def get_all_configs(self) -> list[SymbolConfig]:
-        return [SymbolConfig(config) for config in self.configs["symbols"]]
+        return [SymbolConfig(config) for config in self.engine_config["symbols"]]
