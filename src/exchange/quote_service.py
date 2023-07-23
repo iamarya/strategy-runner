@@ -1,8 +1,8 @@
 # exchange quote service
-from models.enums import INTERVAL_TYPE
-from models.candle import Candle
+from src.models.enums import INTERVAL_TYPE
+from src.models.candle import Candle
 from datetime import datetime
-from exchange.exchange import Exchange, MockExchange
+from src.exchange.exchange import Exchange, MockExchange
 
 
 class QuoteService:
@@ -11,7 +11,8 @@ class QuoteService:
         self.exchange: Exchange = MockExchange()
 
     def get_candles(self, symbol: str, interval: INTERVAL_TYPE, current_time: datetime, no_candles: int) -> list[Candle]:
-        from_time = int(current_time.timestamp() - interval.value)  # in secs
+        from_time = int(current_time.timestamp() -
+                        interval.value*no_candles)  # in secs
         to_time = int(current_time.timestamp())
         # check any corner case if it will return 3 candles when expecting 2 candles
         candles = self.exchange.get_candles(

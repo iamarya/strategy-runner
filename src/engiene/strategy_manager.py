@@ -1,5 +1,5 @@
 
-from strategy.strategy import Strategy
+from src.strategy.strategy import Strategy
 
 
 class StrategyManager:
@@ -7,5 +7,5 @@ class StrategyManager:
         # register strategies
         pass
 
-    def notify(self, event):
+    def notify(self, candle_events):
         pass

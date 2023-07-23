@@ -2,14 +2,14 @@ import threading
 import schedule
 import time
 from datetime import datetime
-from engiene.indicator_manager import IndicatorManager
-from engiene.strategy_manager import StrategyManager
-from exchange.quote_service import QuoteService
-from engiene.candle_manager import CandleManager
-from models.market_watch import MarketWatch
-from models.enums import INTERVAL_TYPE
-from engiene.engine_config import EngineConfig, SymbolConfig
-from strategy.strategy import Strategy
+from src.engiene.indicator_manager import IndicatorManager
+from src.engiene.strategy_manager import StrategyManager
+from src.exchange.quote_service import QuoteService
+from src.engiene.candle_manager import CandleManager
+from src.models.market_watch import MarketWatch
+from src.models.enums import INTERVAL_TYPE
+from src.engiene.engine_config import EngineConfig, SymbolConfig
+from src.strategy.strategy import Strategy
 
 
 class Engine(threading.Thread):
@@ -52,14 +52,19 @@ class Engine(threading.Thread):
     def get_current_symbol(self, config: SymbolConfig, current_time):
         print("get_current_symbol", config.symbol())
         # get current candles and indicators and add to state
-        curr_candles = self.quote_service.get_candles(
-            config.symbol(), config.current_intervals()[0], current_time, config.current_candles_no())
-        print(curr_candles)
-        candle_event = self.candle_manager.create_upadte_candles(
-            curr_candles, config)
-        # print(candle_event)
-        self.indicator_manager.create_upadte_indicators(candle_event)
-        self.strategy_manager.notify(candle_event)
+        candle_events = []
+        for interval in config.current_intervals():
+            curr_candles = self.quote_service.get_candles(
+                config.symbol(), interval, current_time, config.current_candles_no())
+            print(curr_candles)
+            candle_event = self.candle_manager.create_upadte_candles(interval,
+                curr_candles, config.symbol())
+            candle_events.append(candle_event)
+            # add update indicators for given interval
+            for indicator in config.indicators():
+                self.indicator_manager.create_upadte_indicators(candle_event, indicator)
+        # print(candle_events)
+        self.strategy_manager.notify(candle_events)
 
     def run_scheduler(self):
         print("schedluer ran at", datetime.now())

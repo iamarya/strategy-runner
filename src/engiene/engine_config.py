@@ -1,4 +1,6 @@
-from models.enums import *
+from src.models.enums import *
+from src.indicators.sma import SMA
+from src.indicators.indicator import Indicator
 
 configs = {
     "backtest": False,  # flag changes behaviour of engine
@@ -9,16 +11,14 @@ configs = {
         "current_candles_no": 2,
         "history_intervals": [INTERVAL_TYPE.M5, INTERVAL_TYPE.HR1, INTERVAL_TYPE.D1],
         "history_intervals_generated": [],
-        "history_candles_no": 0,
-        "indicators": [],
-        "exchange_type": EXCAHNGE_TYPE.MOCK_EXCAHNGE
-    }],
+        "history_candles_no": 10,
+        "indicators": [SMA(5)],
+        "exchange_type": EXCAHNGE_TYPE.MOCK_EXCAHNGE}],
     "strategies": [{
         # will be used for backtest and paper trading
         "strategy": "S1",
         "db": DB_TYPE.IN_MEMORY,  # IN_MEMORY or GSHEET
-        "exchange_type": EXCAHNGE_TYPE.MOCK_EXCAHNGE
-    },
+        "exchange_type": EXCAHNGE_TYPE.MOCK_EXCAHNGE},
         {
             # will be used for live trading
             "strategy": "S2",
@@ -57,7 +57,7 @@ class SymbolConfig:
     def history_candles_no(self) -> int:
         return self.config["history_candles_no"]
 
-    def indicators(self) -> list[INDICATOR_TYPE]:
+    def indicators(self) -> list[Indicator]:
         return self.config["indicators"]
 
     def exchange_type(self) -> EXCAHNGE_TYPE:

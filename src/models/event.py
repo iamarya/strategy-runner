@@ -1,5 +1,5 @@
 
-from models.enums import INTERVAL_TYPE
+from src.models.enums import INTERVAL_TYPE
 
 
 class CandleEvent:
@@ -17,4 +17,4 @@ class CandleEvent:
         self.updated.append(updated)
 
     def __repr__(self) -> str:
-        return f"symbol: ${self.symbol}; interval: ${self.interval}; updated: ${self.updated}; inserted: ${self.inserted}"
+        return f"symbol: {self.symbol}; interval: {self.interval.name}; updated: {self.updated}; inserted: {self.inserted}"

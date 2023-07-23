@@ -28,7 +28,3 @@ class DB_TYPE(Enum):
 
     def __repr__(self) -> str:
         return self.name
-
-
-class INDICATOR_TYPE(Enum):
-    pass

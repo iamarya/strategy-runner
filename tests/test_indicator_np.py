@@ -16,7 +16,13 @@ df.loc[0:2,'extra'] = df.loc[0:2,"x"].rolling(2).mean()
 # add row and cal again sma
 df.loc[3, ['x', 'y', 'z']] = [4, 22, 45]
 print(df.loc[0:4,"x"].rolling(2).mean())
-df.loc[[3],'extra'] = df.loc[2:3,"x"].rolling(2).mean()
+#df.loc[[3],'extra'] = df.loc[2:3,"x"].rolling(2).mean()
+print(df)
+print("gg", df.iloc[
+            2:4,0].rolling(2).mean())
+print("xx", df.loc[2:3,"x"].rolling(2).mean())
+df.iloc[3:4,3] = df.iloc[
+            2:4,0].rolling(2).mean().iloc[1:2]
 print(df)
 
 # outcome of above experiment

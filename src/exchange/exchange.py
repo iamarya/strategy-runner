@@ -1,6 +1,6 @@
 import random
-from models.candle import Candle
-from models.enums import INTERVAL_TYPE
+from src.models.candle import Candle
+from src.models.enums import INTERVAL_TYPE
 from datetime import datetime
 import math
 
