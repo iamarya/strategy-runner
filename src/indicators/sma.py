@@ -9,7 +9,6 @@ class SMA(Indicator):
         self.duration = duration
 
     def process(self, df: pd.DataFrame, start_index: int, end_index: int):
-        print("calculating sma")
         initial_position = start_index - \
             self.duration if start_index >= self.duration else 0
         df.iloc[start_index:end_index+1, df.columns.get_loc("sma")] = df.iloc[
