@@ -12,7 +12,7 @@ class QuoteService:
 
     def get_candles(self, symbol: str, interval: INTERVAL_TYPE, current_time: datetime, no_candles: int) -> list[Candle]:
         from_time = int(current_time.timestamp() -
-                        interval.value*no_candles)  # in secs
+                        interval.value*(no_candles-1))  # in secs
         to_time = int(current_time.timestamp())
         # check any corner case if it will return 3 candles when expecting 2 candles
         candles = self.exchange.get_candles(

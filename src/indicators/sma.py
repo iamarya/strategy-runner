@@ -13,7 +13,6 @@ class SMA(Indicator):
             self.duration if start_index >= self.duration else 0
         df.iloc[start_index:end_index+1, df.columns.get_loc("sma")] = df.iloc[
             initial_position:end_index+1]["close"].rolling(self.duration).mean()[start_index-initial_position:]
-        print(df)
 
     def get_columns(self) -> list[str]:
         return ["sma"]

@@ -21,9 +21,10 @@ class MarketWatch:
             for indicator in config.indicators():
                 indicator_coulmns.extend(indicator.get_columns())
             all_columns = default_columns+indicator_coulmns
-            df = pd.DataFrame(columns=all_columns)
-            df.set_index("time", inplace=True)
-            mw_item[config.current_intervals()[0]] = df
+            for interval in config.history_intervals() + config.current_intervals():
+                df = pd.DataFrame(columns=all_columns)
+                df.set_index("time", inplace=True)
+                mw_item[interval] = df
             mw_item["length"] = 0
             mw_item["last_updated_time"] = None
             self.ma[config.symbol()] = mw_item

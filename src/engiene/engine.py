@@ -48,6 +48,19 @@ class Engine(threading.Thread):
     def get_history_symbol(self, config: SymbolConfig, current_time):
         # get history candles and indicators per symbol and add to state
         print("get_history_symbol", config.symbol())
+        # candle_events = []
+        for interval in config.history_intervals():
+            curr_candles = self.quote_service.get_candles(
+                config.symbol(), interval, current_time, config.history_candles_no())
+            # print(curr_candles)
+            candle_event = self.candle_manager.create_upadte_candles(interval,
+                curr_candles, config.symbol())
+            # candle_events.append(candle_event)
+            # add update indicators for given interval
+            for indicator in config.indicators():
+                self.indicator_manager.create_upadte_indicators(candle_event, indicator)
+        # print(candle_events)
+        # self.strategy_manager.notify(candle_events)
 
     def get_current_symbol(self, config: SymbolConfig, current_time):
         print("get_current_symbol", config.symbol())
@@ -56,7 +69,7 @@ class Engine(threading.Thread):
         for interval in config.current_intervals():
             curr_candles = self.quote_service.get_candles(
                 config.symbol(), interval, current_time, config.current_candles_no())
-            print(curr_candles)
+            # print(curr_candles)
             candle_event = self.candle_manager.create_upadte_candles(interval,
                 curr_candles, config.symbol())
             candle_events.append(candle_event)
