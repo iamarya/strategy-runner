@@ -42,37 +42,38 @@ class Engine(threading.Thread):
         print("inside get_history_all")
         current_time = datetime.now()
         calls = []
-        for config in self.engine_config.get_all_configs():
-            calls.append(threading.Thread(
-                target=self.get_history_symbol, args=(config, current_time), daemon=True))
+        for symbols_config in self.engine_config.get_all_configs():
+            for symbol in symbols_config.symbols:
+                calls.append(threading.Thread(
+                    target=self.get_history_symbol, args=(symbol, symbols_config.symbol_config, current_time), daemon=True))
         for call in calls:
             call.start()
         for call in calls:
             call.join()
 
-    def get_history_symbol(self, config: SymbolConfig, current_time):
+    def get_history_symbol(self, symbol: str, config: SymbolConfig, current_time):
         # get history candles and indicators per symbol and add to state
-        print("get_history_symbol", config.symbol())
+        print("get_history_symbol", symbol)
         # candle_events = []
         for interval in config.history_intervals():
             history_candles = self.quote_service.get_candles(
-                config.symbol(), interval, current_time, config.history_candles_no())
+                symbol, interval, current_time, config.history_candles_no())
             # print(curr_candles)
-            candle_event = self.market_watch_manager.add_update_candles(config.symbol(), interval,
+            candle_event = self.market_watch_manager.add_update_candles(symbol, interval,
                                                                         history_candles)
             for indicator in config.indicators():
                 self.indicator_manager.create_upadte_indicators(
                     candle_event, indicator)
 
-    def get_current_symbol(self, config: SymbolConfig, current_time):
-        print("get_current_symbol", config.symbol())
+    def get_current_symbol(self, symbol: str, config: SymbolConfig, current_time):
+        print("get_current_symbol", symbol)
         # get current candles and indicators and add to state
         candle_events = []
         for interval in config.current_intervals():
             curr_candles = self.quote_service.get_candles(
-                config.symbol(), interval, current_time, config.current_candles_no())
+                symbol, interval, current_time, config.current_candles_no())
             # print(curr_candles)
-            candle_event = self.market_watch_manager.add_update_candles(config.symbol(), interval,
+            candle_event = self.market_watch_manager.add_update_candles(symbol, interval,
                                                                         curr_candles)
             candle_events.append(candle_event)
             # add update indicators for given interval
@@ -92,9 +93,10 @@ class Engine(threading.Thread):
     def get_current_all(self):
         calls = []
         current_time = datetime.now()
-        for config in self.engine_config.get_all_configs():
-            calls.append(threading.Thread(
-                target=self.get_current_symbol, args=(config, current_time), daemon=True))
+        for symbols_config in self.engine_config.get_all_configs():
+            for symbol in symbols_config.symbols:
+                calls.append(threading.Thread(
+                    target=self.get_current_symbol, args=(symbol, symbols_config.symbol_config, current_time), daemon=True))
         for call in calls:
             call.start()
         for call in calls:

@@ -28,25 +28,27 @@ market_watch = {
 
 class MarketWatchManager:
 
-    def __init__(self, configs: EngineConfig) -> None:
+    def __init__(self, engine_config: EngineConfig) -> None:
         self.market_watch = dict()
         # setup initial ma using config
-        for config in configs.get_all_configs():
-            mw_item = dict()
-            # , index=range(10) needed if initial size
-            indicator_coulmns = []
-            for indicator in config.indicators():
-                indicator_coulmns.extend(indicator.get_columns())
-            all_columns = default_columns+indicator_coulmns
-            for interval in config.history_intervals() + config.current_intervals() \
-                    + config.history_intervals_generated() + config.current_intervals_generated():
-                df = pd.DataFrame(columns=all_columns)
-                df.set_index("time", inplace=True)
-                mw_item[interval] = df
-            mw_item["length"] = 0
-            mw_item["last_updated_time"] = None
-            mw_item["symbol"] = config.symbol()
-            self.market_watch[config.symbol()] = mw_item
+        for symbols_config in engine_config.get_all_configs():
+            for symbol in symbols_config.symbols:
+                config = symbols_config.symbol_config
+                mw_item = dict()
+                # , index=range(10) needed if initial size
+                indicator_coulmns = []
+                for indicator in config.indicators():
+                    indicator_coulmns.extend(indicator.get_columns())
+                all_columns = default_columns+indicator_coulmns
+                for interval in config.history_intervals() + config.current_intervals() \
+                        + config.history_intervals_generated() + config.current_intervals_generated():
+                    df = pd.DataFrame(columns=all_columns)
+                    df.set_index("time", inplace=True)
+                    mw_item[interval] = df
+                mw_item["length"] = 0
+                mw_item["last_updated_time"] = None
+                mw_item["symbol"] = symbol
+                self.market_watch[symbol] = mw_item
 
     def get_ltp(self, symbol: str) -> float:
         return self.market_watch[symbol].ltp
@@ -81,7 +83,7 @@ class MarketWatchManager:
                 self.market_watch[symbol]["length"] = last_index+1
         self.market_watch[symbol]["last_updated_time"] = candles[-1].t
         self.market_watch[symbol]["ltp"] = candles[-1].c
-        # print(self.ma)
+        # print(self.market_watch[symbol])
         # print("candle_event", candle_event)
         return candle_event
 
