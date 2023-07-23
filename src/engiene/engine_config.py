@@ -7,7 +7,7 @@ engine_config = {
     "backtest": False,  # flag changes behaviour of engine
     "symbol_configs": [
         {
-            # todo add multiple symbools here for same config
+            # add multiple symbools here for same config
             "symbols": ["BTC"],
             "symbol_config":  {
                 "current_intervals": [INTERVAL_TYPE.S5],
@@ -43,7 +43,6 @@ engine_config = {
 # live trade will use gsheet and actual order service
 
 
-# todo separate symbol name from symbol_config so that same config can be reused
 class SymbolConfig:
     def __init__(self, symbol_config) -> None:
         self.symbol_config = symbol_config

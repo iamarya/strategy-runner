@@ -61,9 +61,7 @@ class Engine(threading.Thread):
             # print(curr_candles)
             candle_event = self.market_watch_manager.add_update_candles(symbol, interval,
                                                                         history_candles)
-            for indicator in config.indicators():
-                self.indicator_manager.create_upadte_indicators(
-                    candle_event, indicator)
+            self.create_update_indicators(config, candle_event)
 
     def get_current_symbol(self, symbol: str, config: SymbolConfig, current_time):
         print("get_current_symbol", symbol)
@@ -76,13 +74,15 @@ class Engine(threading.Thread):
             candle_event = self.market_watch_manager.add_update_candles(symbol, interval,
                                                                         curr_candles)
             candle_events.append(candle_event)
-            # add update indicators for given interval
-            for indicator in config.indicators():
-                self.indicator_manager.create_upadte_indicators(
-                    candle_event, indicator)
+            self.create_update_indicators(config, candle_event)
         # candle_events: list[CandleEvent] is for a perticular time for all intervals for a single symbol
         # print(candle_events)
         self.all_candle_events.append(candle_events)
+
+    def create_update_indicators(self, config, candle_event):
+        for indicator in config.indicators():
+            self.indicator_manager.create_upadte_indicators(
+                    candle_event, indicator)
 
     def run_scheduler(self):
         print("schedluer ran at", datetime.now())
