@@ -4,6 +4,16 @@ from src.models.enums import INTERVAL_TYPE
 
 class CandleEvent:
 
+    '''
+    Ex:
+    {
+        symbol: "BTC",
+        interval: M5,
+        updated: [1234, 1235], #timestamps
+        inserted: [1236]
+    }
+    '''
+
     def __init__(self, symbol: str, interval: INTERVAL_TYPE) -> None:
         self.symbol = symbol
         self.interval = interval

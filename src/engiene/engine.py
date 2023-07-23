@@ -31,10 +31,6 @@ class Engine(threading.Thread):
             while True:
                 schedule.run_pending()
                 time.sleep(1)
-        if self.configs.is_backtest():
-            synthesized_all_candle_events = self.market_watch_manager.synthesize_all_candle_events()
-            for candle_events in synthesized_all_candle_events:
-                self.strategy_manager.notify(candle_events)
 
     def get_history_all(self):
         print("inside get_history_all")
@@ -61,6 +57,10 @@ class Engine(threading.Thread):
             for indicator in config.indicators():
                 self.indicator_manager.create_upadte_indicators(
                     candle_event, indicator)
+        if self.configs.is_backtest():
+            synthesized_all_candle_events = self.market_watch_manager.synthesize_all_candle_events(config.symbol())
+            for candle_events in synthesized_all_candle_events:
+                self.strategy_manager.notify(candle_events)
 
 
     def get_current_symbol(self, config: SymbolConfig, current_time):
@@ -78,6 +78,7 @@ class Engine(threading.Thread):
             for indicator in config.indicators():
                 self.indicator_manager.create_upadte_indicators(
                     candle_event, indicator)
+        # candle_events: list[CandleEvent] is for a perticular time for all intervals for a single symbol
         # print(candle_events)
         self.strategy_manager.notify(candle_events)
 
