@@ -1,7 +1,7 @@
 
 <h1 align="center">
   <br>
-  <img src="https://github.com/iamarya/strategy-runner/tree/main/.github/bot.png" alt="" width="200">
+  <img src="https://github.com/iamarya/strategy-runner/blob/main/.github/bot.png?raw=true" alt="" width="200">
   <br>
   STRATEGY RUNNER
 </h1>
