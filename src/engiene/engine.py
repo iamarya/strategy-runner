@@ -26,12 +26,17 @@ class Engine(threading.Thread):
     def run(self):
         # get history candles and indicators
         self.get_history_all()
-        # configure scheduler
-        # schedule.every(5).minutes.at(":05").do(self.run_scheduler)
-        schedule.every(5).seconds.do(self.run_scheduler)
-        while True:
-            schedule.run_pending()
-            time.sleep(1)
+        if not self.configs.is_backtest():
+            # configure scheduler
+            # schedule.every(5).minutes.at(":05").do(self.run_scheduler)
+            schedule.every(5).seconds.do(self.run_scheduler)
+            while True:
+                schedule.run_pending()
+                time.sleep(1)
+        if self.configs.is_backtest():
+            synthesized_all_candle_events = self.candle_manager.synthesize_all_candle_events()
+            for candle_events in synthesized_all_candle_events:
+                self.strategy_manager.notify(candle_events)
 
     def get_history_all(self):
         print("inside get_history_all")

@@ -15,3 +15,8 @@ class CandleManager:
         # return response (which candles are updated which are created)
         return self.market_watch.add_update_candles(symbol, interval,
                                                     candles)
+    def generate_candles(self):
+        pass
+    
+    def synthesize_all_candle_events(self) -> list:
+        return []

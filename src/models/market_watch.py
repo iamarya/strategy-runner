@@ -9,6 +9,7 @@ default_columns = ['time', 'open', 'high', 'low', 'close', 'volume']
 
 pd.options.mode.copy_on_write = False
 
+
 class MarketWatch:
 
     def __init__(self, configs: EngineConfig) -> None:
@@ -21,7 +22,8 @@ class MarketWatch:
             for indicator in config.indicators():
                 indicator_coulmns.extend(indicator.get_columns())
             all_columns = default_columns+indicator_coulmns
-            for interval in config.history_intervals() + config.current_intervals():
+            for interval in config.history_intervals() + config.current_intervals() \
+                    + config.history_intervals_generated() + config.current_intervals_generated():
                 df = pd.DataFrame(columns=all_columns)
                 df.set_index("time", inplace=True)
                 mw_item[interval] = df
@@ -37,7 +39,7 @@ class MarketWatch:
 
     def get_last_updated(self, symbol: str):
         return self.ma[symbol].last_updated_time
-    
+
     def get_length(self, symbol: str):
         return self.ma[symbol].length
 
