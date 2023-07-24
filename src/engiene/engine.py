@@ -34,6 +34,7 @@ class Engine(threading.Thread):
                 time.sleep(1)
         else:
             # backtesting only
+            print("doing backtesting only")
             synthesized_all_candle_events_all_time = self.market_watch_manager.synthesized_all_candle_events_all_time()
             for all_candle_events_at_time in synthesized_all_candle_events_all_time:
                 self.strategy_manager.notify(all_candle_events_at_time)

@@ -12,4 +12,7 @@ def hello():
 if __name__ == '__main__':
     engine = Engine(engine_config)
     engine.start()
-    app.run()
+    if engine_config["backtest"] == False:
+        app.run()
+    else:
+        engine.join()
