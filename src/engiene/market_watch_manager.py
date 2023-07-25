@@ -81,14 +81,27 @@ class MarketWatchManager:
                 candle_event.add_to_inserted(candle.t)
                 df.loc[candle.t, default_columns[1:]] = wo_time
                 self.market_watch[symbol]["length"] = last_index+1
-        self.market_watch[symbol]["last_updated_time"] = candles[-1].t
+        last_updated_time = self.market_watch[symbol]["last_updated_time"]
+        if last_updated_time == None or last_updated_time < candles[-1].t:
+            self.market_watch[symbol]["last_updated_time"] = candles[-1].t
         self.market_watch[symbol]["ltp"] = candles[-1].c
         # print(self.market_watch[symbol])
         # print("candle_event", candle_event)
         return candle_event
 
-    def generate_candles(self):
-        pass
+    '''
+    DOUBT : candle timestamp should be future or past/ completed candle?????
+    clear: its always past. basically starting sec of the period. ex today is 24th the starting sec of 24th for day candle.
+    '''
+
+    def generate_candles(self, symbol: str, source_interval: INTERVAL_TYPE,
+                         source_candle_event: CandleEvent, target_interval: INTERVAL_TYPE):
+        df = self.market_watch[symbol][target_interval]
+        candle_event = CandleEvent(symbol, target_interval)
+
+        # todo generate, dont think much, use loop like above for each candle to inster
+        # and updated as this is not needed for history
+        return candle_event
 
     '''
     Used for back testing to generate all candle events for history candles

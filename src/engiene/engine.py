@@ -2,6 +2,7 @@ import threading
 import schedule
 import time
 from datetime import datetime
+from src.models.event import CandleEvent
 from src.engiene.indicator_manager import IndicatorManager
 from src.engiene.strategy_manager import StrategyManager
 from src.exchange.quote_service import QuoteService
@@ -67,15 +68,24 @@ class Engine(threading.Thread):
     def get_current_symbol(self, symbol: str, config: SymbolConfig, current_time):
         print("get_current_symbol", symbol)
         # get current candles and indicators and add to state
-        candle_events = []
+        candle_events:list[CandleEvent] = []
         for interval in config.current_intervals():
             curr_candles = self.quote_service.get_candles(
                 symbol, interval, current_time, config.current_candles_no())
-            # print(curr_candles)
+            print(curr_candles)
             candle_event = self.market_watch_manager.add_update_candles(symbol, interval,
                                                                         curr_candles)
             candle_events.append(candle_event)
             self.create_update_indicators(config, candle_event)
+
+        source_interval = config.current_intervals()[0]
+        source_candle_event = candle_events[0]
+        # generate candles
+        for interval in config.current_intervals_generated():
+            candle_event = self.market_watch_manager.generate_candles(symbol, source_interval, source_candle_event, interval)
+            candle_events.append(candle_event)
+            self.create_update_indicators(config, candle_event)
+        
         # candle_events: list[CandleEvent] is for a perticular time for all intervals for a single symbol
         # print(candle_events)
         self.all_candle_events.append(candle_events)
