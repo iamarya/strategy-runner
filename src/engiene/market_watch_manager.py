@@ -100,7 +100,7 @@ class MarketWatchManager:
         candle_event = CandleEvent(symbol, target_interval)
 
         # todo generate, dont think much, use loop like above for each candle to inster
-        # and updated as this is not needed for history
+        # and updated as this is not needed for history/backtest mainly
         return candle_event
 
     '''

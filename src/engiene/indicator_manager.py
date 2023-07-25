@@ -11,7 +11,7 @@ class IndicatorManager:
 
     def create_upadte_indicators(self, candle_event: CandleEvent, indicator: Indicator):
         if not candle_event.updated and not candle_event.inserted:
-            print("no change in candles")
+            print("no change in candles", candle_event)
             return
         df = self.market_watch_manager.get_candles(candle_event.symbol, candle_event.interval)
         start_index = df.index.get_loc(
