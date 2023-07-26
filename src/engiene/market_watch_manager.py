@@ -16,10 +16,11 @@ market_watch = {
         "symbol": "ETH",
         M5: DataFrame,
         D1: DataFrame,
-        "indicators": [i1, i2], #may be not needed
+        "indicators": [i1, i2], #not added yet, may be not needed
         "ltp": 123,
-        "last_updated_time": 12222987654
-        "length": 10 
+        "last_updated_time": 12222987654,
+        "length": 10,
+        "exchange_timezone": UTC #not added yet
     }
 }
 
