@@ -18,7 +18,7 @@ class QuoteService:
             symbol, interval, from_time, to_time)
         # check any corner case if it will return 3 candles when expecting 2 candles
         # should not happen, even if comes it will check and update without issue
-        # if len(candles) > no_candles: 
-        #     candles = candles [-no_candles:] 
+        # if len(candles) > no_candles:
+        #     candles = candles [-no_candles:]
         print("candles recieved for above inputs:", candles)
         return candles

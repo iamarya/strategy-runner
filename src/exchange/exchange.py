@@ -17,7 +17,8 @@ class MockExchange(Exchange):
 
     def get_candles(self, symbol: str, inetval: INTERVAL_TYPE, from_time: int, to_time: int) -> list[Candle]:
         candles = []
-        print(f"from_time={from_time}, to_time={to_time} in secs for interval={inetval.name}")
+        print(
+            f"from_time={from_time}, to_time={to_time} in secs for interval={inetval.name}")
         current_candle_time = math.floor(
             from_time/inetval.value) * inetval.value
         while current_candle_time <= to_time:

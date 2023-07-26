@@ -21,7 +21,7 @@ class Engine(threading.Thread):
         self.indicator_manager = IndicatorManager(self.market_watch_manager)
         self.quote_service = QuoteService()
         self.strategy_manager = StrategyManager(Strategy())
-        self.all_candle_events = [] # todo may be better to make a dict()
+        self.all_candle_events = []  # todo may be better to make a dict()
 
     def run(self):
         # get history candles and indicators
@@ -56,7 +56,7 @@ class Engine(threading.Thread):
     def get_history_symbol(self, symbol: str, config: SymbolConfig, current_time):
         # get history candles and indicators per symbol and add to state
         print("get_history_symbol", symbol)
-        candle_events:list[CandleEvent] = []
+        candle_events: list[CandleEvent] = []
         for interval in config.history_intervals():
             history_candles = self.quote_service.get_candles(
                 symbol, interval, current_time, config.history_candles_no())
@@ -65,12 +65,13 @@ class Engine(threading.Thread):
                                                                         history_candles)
             candle_events.append(candle_event)
             self.create_update_indicators(config, candle_event)
-        
+
         # generate candles
         source_interval = config.history_intervals()[0]
         source_candle_event = candle_events[0]
         for interval in config.history_intervals_generated():
-            candle_event = self.market_watch_manager.generate_candles(symbol, source_interval, source_candle_event, interval)
+            candle_event = self.market_watch_manager.generate_candles(
+                symbol, source_interval, source_candle_event, interval)
             candle_events.append(candle_event)
             self.create_update_indicators(config, candle_event)
         # printing things
@@ -80,7 +81,7 @@ class Engine(threading.Thread):
     def get_current_symbol(self, symbol: str, config: SymbolConfig, current_time):
         print(f"--- get_current_symbol:{symbol} ---")
         # get current candles and indicators and add to state
-        candle_events:list[CandleEvent] = []
+        candle_events: list[CandleEvent] = []
         for interval in config.current_intervals():
             curr_candles = self.quote_service.get_candles(
                 symbol, interval, current_time, config.current_candles_no())
@@ -89,12 +90,13 @@ class Engine(threading.Thread):
             candle_events.append(candle_event)
             self.create_update_indicators(config, candle_event)
 
-        #todo write propercode to sort and get smallets interval as source and corrosponding candle event
+        # todo write propercode to sort and get smallets interval as source and corrosponding candle event
         source_interval = config.current_intervals()[0]
         source_candle_event = candle_events[0]
         # generate candles
         for interval in config.current_intervals_generated():
-            candle_event = self.market_watch_manager.generate_candles(symbol, source_interval, source_candle_event, interval)
+            candle_event = self.market_watch_manager.generate_candles(
+                symbol, source_interval, source_candle_event, interval)
             candle_events.append(candle_event)
             self.create_update_indicators(config, candle_event)
         # printing things
@@ -106,7 +108,7 @@ class Engine(threading.Thread):
     def create_update_indicators(self, config, candle_event):
         for indicator in config.indicators():
             self.indicator_manager.create_upadte_indicators(
-                    candle_event, indicator)
+                candle_event, indicator)
 
     def run_scheduler(self):
         print(f"\n\n === Schedluer Triggered @ {datetime.now()} ===\n")
@@ -125,4 +127,5 @@ class Engine(threading.Thread):
             call.start()
         for call in calls:
             call.join()
-        print('Time talen to run fetch all quotes', datetime.now() - current_time)
+        print('Time talen to run fetch all quotes',
+              datetime.now() - current_time)

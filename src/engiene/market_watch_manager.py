@@ -37,7 +37,7 @@ class MarketWatchManager:
             for symbol in symbols_config.symbols:
                 config = symbols_config.symbol_config
                 mw_item = dict()
-                # , index=range(10) needed if initial size
+                # index=range(10) needed if initial size is needed and index to start from 0
                 indicator_coulmns = []
                 for indicator in config.indicators():
                     indicator_coulmns.extend(indicator.get_columns())
@@ -99,15 +99,15 @@ class MarketWatchManager:
     def generate_candles(self, symbol: str, source_interval: INTERVAL_TYPE,
                          source_candle_event: CandleEvent, target_interval: INTERVAL_TYPE):
         source_df = self.market_watch[symbol][source_interval]
-        start_index, _= source_candle_event.get_start_end_time()
-        updated_only_df:pd.DataFrame = source_df.loc[start_index:]
-        generated_df:pd.DataFrame = updated_only_df.groupby(np.floor(
-                updated_only_df.index/target_interval.value)*target_interval.value).agg(
-            open = ('open', 'first'),
-            high = ('high', 'max'),
-            low = ('low', 'min'),
+        start_index, _ = source_candle_event.get_start_end_time()
+        updated_only_df: pd.DataFrame = source_df.loc[start_index:]
+        generated_df: pd.DataFrame = updated_only_df.groupby(np.floor(
+            updated_only_df.index/target_interval.value)*target_interval.value).agg(
+            open=('open', 'first'),
+            high=('high', 'max'),
+            low=('low', 'min'),
             close=('close', 'last'),
-            volume = ('volume', 'sum')
+            volume=('volume', 'sum')
         )
         generated_df.index = generated_df.index.astype('int64')
         # print("generated_df", generated_df)
@@ -115,7 +115,7 @@ class MarketWatchManager:
         candle_event = CandleEvent(symbol, target_interval)
         df = self.market_watch[symbol][target_interval]
         for index, row in generated_df.iterrows():
-            time:int = index # type: ignore
+            time: int = index  # type: ignore
             wo_time = [row.open, row.high, row.low, row.close, row.volume]
             if index in df.index:
                 if df.loc[index, default_columns[1:]].values.flatten().tolist() != wo_time:
@@ -141,14 +141,15 @@ class MarketWatchManager:
 
         # getsmallest interval
         return []  # list of list of candle_event
-    
-    def get_market_watch(self, symbol:str)-> dict:
+
+    def get_market_watch(self, symbol: str) -> dict:
         return self.market_watch[symbol]
-    
-    def print_market_watch(self, symbol:str)-> None:
+
+    def print_market_watch(self, symbol: str) -> None:
         symbol_mw = self.get_market_watch(symbol)
         print(f'\nMarketwatchs for symbol {symbol}')
         for each_int in INTERVAL_TYPE:
             if each_int in symbol_mw:
-                print(f"\n[symbol ={symbol}; last_updated_time = {symbol_mw['last_updated_time']}; interval={each_int.name}; ltp = {symbol_mw['ltp']} ]")
+                print(
+                    f"\n[symbol ={symbol}; last_updated_time = {symbol_mw['last_updated_time']}; interval={each_int.name}; ltp = {symbol_mw['ltp']} ]")
                 print(symbol_mw[each_int])

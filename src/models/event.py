@@ -25,7 +25,7 @@ class CandleEvent:
 
     def add_to_updated(self, updated: int):
         self.updated.append(updated)
-    
+
     def get_start_end_time(self) -> tuple:
         if not self.updated and not self.inserted:
             # both empty
