@@ -56,14 +56,26 @@ class Engine(threading.Thread):
     def get_history_symbol(self, symbol: str, config: SymbolConfig, current_time):
         # get history candles and indicators per symbol and add to state
         print("get_history_symbol", symbol)
-        # candle_events = []
+        candle_events:list[CandleEvent] = []
         for interval in config.history_intervals():
             history_candles = self.quote_service.get_candles(
                 symbol, interval, current_time, config.history_candles_no())
             # print(curr_candles)
             candle_event = self.market_watch_manager.add_update_candles(symbol, interval,
                                                                         history_candles)
+            candle_events.append(candle_event)
             self.create_update_indicators(config, candle_event)
+        
+        # generate candles
+        source_interval = config.history_intervals()[0]
+        source_candle_event = candle_events[0]
+        for interval in config.history_intervals_generated():
+            candle_event = self.market_watch_manager.generate_candles(symbol, source_interval, source_candle_event, interval)
+            candle_events.append(candle_event)
+            self.create_update_indicators(config, candle_event)
+        # printing things
+        self.market_watch_manager.print_market_watch(symbol)
+        self.all_candle_events.append(candle_events)
 
     def get_current_symbol(self, symbol: str, config: SymbolConfig, current_time):
         print(f"--- get_current_symbol:{symbol} ---")
