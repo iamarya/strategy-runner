@@ -14,9 +14,9 @@ class IndicatorManager:
             print("no change in candles", candle_event)
             return
         df = self.market_watch_manager.get_candles(candle_event.symbol, candle_event.interval)
-        start_index = df.index.get_loc(
-            candle_event.updated[0]) if candle_event.updated else df.index.get_loc(candle_event.inserted[0])
-        end_index = df.index.get_loc(
-            candle_event.inserted[-1]) if candle_event.inserted else df.index.get_loc(candle_event.updated[-1])
+        start_index, end_index = candle_event.get_start_end_time()
+        # position is needed to calculate indicators easily
+        start_position = df.index.get_loc(start_index)
+        end_position = df.index.get_loc(end_index)
         indicator.process(self.market_watch_manager.get_candles(
-            candle_event.symbol, candle_event.interval), start_index, end_index)
+            candle_event.symbol, candle_event.interval), start_position, end_position)

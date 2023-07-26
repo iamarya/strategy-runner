@@ -2,6 +2,7 @@ from src.models.candle import Candle
 from src.models.enums import INTERVAL_TYPE
 from src.engiene.engine_config import EngineConfig, SymbolConfig
 import pandas as pd
+import numpy as np
 
 from src.models.event import CandleEvent
 
@@ -19,7 +20,7 @@ market_watch = {
         "indicators": [i1, i2], #not added yet, may be not needed
         "ltp": 123,
         "last_updated_time": 12222987654,
-        "length": 10,
+        "length": 10, # for which df? todo need to update structure or remove this
         "exchange_timezone": UTC #not added yet
     }
 }
@@ -70,7 +71,7 @@ class MarketWatchManager:
         df = self.market_watch[symbol][interval]
         candle_event = CandleEvent(symbol, interval)
         for candle in candles:
-            last_index = self.market_watch[symbol]["length"]
+            # last_index = self.market_watch[symbol]["length"]
             wo_time = [candle.o, candle.h, candle.l, candle.c, candle.v]
             if candle.t in df.index:
                 if df.loc[candle.t, default_columns[1:]].values.flatten().tolist() != wo_time:
@@ -81,7 +82,7 @@ class MarketWatchManager:
                 # inserted
                 candle_event.add_to_inserted(candle.t)
                 df.loc[candle.t, default_columns[1:]] = wo_time
-                self.market_watch[symbol]["length"] = last_index+1
+                # self.market_watch[symbol]["length"] = last_index+1
         last_updated_time = self.market_watch[symbol]["last_updated_time"]
         if last_updated_time == None or last_updated_time < candles[-1].t:
             self.market_watch[symbol]["last_updated_time"] = candles[-1].t
@@ -97,11 +98,35 @@ class MarketWatchManager:
 
     def generate_candles(self, symbol: str, source_interval: INTERVAL_TYPE,
                          source_candle_event: CandleEvent, target_interval: INTERVAL_TYPE):
-        df = self.market_watch[symbol][target_interval]
-        candle_event = CandleEvent(symbol, target_interval)
+        source_df = self.market_watch[symbol][source_interval]
+        start_index, _= source_candle_event.get_start_end_time()
+        updated_only_df:pd.DataFrame = source_df.loc[start_index:]
+        generated_df:pd.DataFrame = updated_only_df.groupby(np.floor(
+                updated_only_df.index/target_interval.value)*target_interval.value).agg(
+            open = ('open', 'first'),
+            high = ('high', 'max'),
+            low = ('low', 'min'),
+            close=('close', 'last'),
+            volume = ('volume', 'sum')
+        )
+        generated_df.index = generated_df.index.astype('int64')
+        # print("generated_df", generated_df)
 
-        # todo generate, dont think much, use loop like above for each candle to inster
-        # and updated as this is not needed for history/backtest mainly
+        candle_event = CandleEvent(symbol, target_interval)
+        df = self.market_watch[symbol][target_interval]
+        for index, row in generated_df.iterrows():
+            time:int = index # type: ignore
+            wo_time = [row.open, row.high, row.low, row.close, row.volume]
+            if index in df.index:
+                if df.loc[index, default_columns[1:]].values.flatten().tolist() != wo_time:
+                    # updated
+                    candle_event.add_to_updated(time)
+                    df.loc[time, default_columns[1:]] = wo_time
+            else:
+                # inserted
+                candle_event.add_to_inserted(time)
+                df.loc[time, default_columns[1:]] = wo_time
+
         return candle_event
 
     '''
@@ -116,3 +141,14 @@ class MarketWatchManager:
 
         # getsmallest interval
         return []  # list of list of candle_event
+    
+    def get_market_watch(self, symbol:str)-> dict:
+        return self.market_watch[symbol]
+    
+    def print_market_watch(self, symbol:str)-> None:
+        symbol_mw = self.get_market_watch(symbol)
+        print(f'\nMarketwatchs for symbol {symbol}')
+        for each_int in INTERVAL_TYPE:
+            if each_int in symbol_mw:
+                print(f"\n[symbol ={symbol}; last_updated_time = {symbol_mw['last_updated_time']}; interval={each_int.name}; ltp = {symbol_mw['ltp']} ]")
+                print(symbol_mw[each_int])

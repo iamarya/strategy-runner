@@ -24,7 +24,7 @@ engine_config = {
     "strategies": [
         {
             # will be used for backtest and paper trading
-            "strategy": "S1",
+            "strategy": SwingTradingStrategy(),
             "db": DB_TYPE.IN_MEMORY,  # IN_MEMORY or GSHEET
             "exchange_type": EXCAHNGE_TYPE.MOCK_EXCAHNGE
         },

@@ -14,9 +14,11 @@ class QuoteService:
         from_time = int(current_time.timestamp() -
                         interval.value*(no_candles-1))  # in secs
         to_time = int(current_time.timestamp())
-        # check any corner case if it will return 3 candles when expecting 2 candles
         candles = self.exchange.get_candles(
             symbol, interval, from_time, to_time)
-        # if len(candles) > no_candles:
-        #     candles = candles [-no_candles:]
+        # check any corner case if it will return 3 candles when expecting 2 candles
+        # should not happen, even if comes it will check and update without issue
+        # if len(candles) > no_candles: 
+        #     candles = candles [-no_candles:] 
+        print("candles recieved for above inputs:", candles)
         return candles

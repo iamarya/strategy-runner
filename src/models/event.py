@@ -25,6 +25,14 @@ class CandleEvent:
 
     def add_to_updated(self, updated: int):
         self.updated.append(updated)
+    
+    def get_start_end_time(self) -> tuple:
+        if not self.updated and not self.inserted:
+            # both empty
+            return ()
+        start_index = self.updated[0] if self.updated else self.inserted[0]
+        end_index = self.inserted[-1] if self.inserted else self.updated[-1]
+        return start_index, end_index
 
     def __repr__(self) -> str:
         return f"symbol: {self.symbol}; interval: {self.interval.name}; updated: {self.updated}; inserted: {self.inserted}"
