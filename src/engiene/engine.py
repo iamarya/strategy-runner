@@ -66,7 +66,8 @@ class Engine(threading.Thread):
             candle_events.append(candle_event)
             self.create_update_indicators(config, candle_event)
 
-        # generate candles
+        # generate candles todo logic is wrong while grouping in case history candle count is not enough for 5m interval
+        # todo generate from 1hr candles,so go from lower to higher, 5m-> 1hr->1d
         source_interval = config.history_intervals()[0]
         source_candle_event = candle_events[0]
         for interval in config.history_intervals_generated():
@@ -93,7 +94,9 @@ class Engine(threading.Thread):
         # todo write propercode to sort and get smallets interval as source and corrosponding candle event
         source_interval = config.current_intervals()[0]
         source_candle_event = candle_events[0]
-        # generate candles
+        
+        # generate candles todo logic is wrong while grouping in case history candle count is not enough for 5m interval
+        # todo generate from 1hr candles,so go from lower to higher, 5m-> 1hr->1d
         for interval in config.current_intervals_generated():
             candle_event = self.market_watch_manager.generate_candles(
                 symbol, source_interval, source_candle_event, interval)

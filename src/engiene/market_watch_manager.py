@@ -1,3 +1,4 @@
+import math
 from src.models.candle import Candle
 from src.models.enums import INTERVAL_TYPE
 from src.engiene.engine_config import EngineConfig, SymbolConfig
@@ -99,7 +100,9 @@ class MarketWatchManager:
     def generate_candles(self, symbol: str, source_interval: INTERVAL_TYPE,
                          source_candle_event: CandleEvent, target_interval: INTERVAL_TYPE):
         source_df = self.market_watch[symbol][source_interval]
-        start_index, _ = source_candle_event.get_start_end_time()
+        source_start_index, _ = source_candle_event.get_start_end_time()
+        # todo will update formula one time offset is added to exchange
+        start_index = math.floor(source_start_index/target_interval.value)*target_interval.value
         updated_only_df: pd.DataFrame = source_df.loc[start_index:]
         generated_df: pd.DataFrame = updated_only_df.groupby(np.floor(
             updated_only_df.index/target_interval.value)*target_interval.value).agg(
@@ -116,16 +119,28 @@ class MarketWatchManager:
         df = self.market_watch[symbol][target_interval]
         for index, row in generated_df.iterrows():
             time: int = index  # type: ignore
-            wo_time = [row.open, row.high, row.low, row.close, row.volume]
             if index in df.index:
-                if df.loc[index, default_columns[1:]].values.flatten().tolist() != wo_time:
-                    # updated
+                is_updated = False
+                # no need to update open
+                if df.loc[time, 'high'] < row.high:
+                    df.loc[time, 'high'] = row.high
+                    is_updated = True
+                if df.loc[time, 'low'] > row.low:
+                    df.loc[time, 'low'] = row.low
+                    is_updated = True
+                if df.loc[time, 'close'] != row.close:
+                    df.loc[time, 'close'] = row.close
+                    is_updated = True
+                if df.loc[time, 'volume'] < row.volume:
+                    df.loc[time, 'volume'] = row.volume
+                    is_updated = True
+                # updated
+                if is_updated:
                     candle_event.add_to_updated(time)
-                    df.loc[time, default_columns[1:]] = wo_time
             else:
                 # inserted
                 candle_event.add_to_inserted(time)
-                df.loc[time, default_columns[1:]] = wo_time
+                df.loc[time, default_columns[1:]] = [row.open, row.high, row.low, row.close, row.volume]
 
         return candle_event
 
