@@ -4,9 +4,10 @@ from enum import Enum
 class INTERVAL_TYPE(Enum):
     S5 = 5  # testing purpose
     M5 = 300
-    M10 = 600
+    M15 = 900
     HR1 = 3600
     D1 = 86400
+    W1 = 604800
 
     def __repr__(self) -> str:
         return self.name
