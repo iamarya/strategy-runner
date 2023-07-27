@@ -10,15 +10,17 @@ class CandleEvent:
         symbol: "BTC",
         interval: M5,
         updated: [1234, 1235], #timestamps
-        inserted: [1236]
+        inserted: [1236],
+        generated: True
     }
     '''
 
-    def __init__(self, symbol: str, interval: INTERVAL_TYPE) -> None:
+    def __init__(self, symbol: str, interval: INTERVAL_TYPE, generated: bool) -> None:
         self.symbol = symbol
         self.interval = interval
         self.updated = []
         self.inserted = []
+        self.generated = generated
 
     def add_to_inserted(self, inserted: int):
         self.inserted.append(inserted)
@@ -35,4 +37,4 @@ class CandleEvent:
         return start_index, end_index
 
     def __repr__(self) -> str:
-        return f"symbol: {self.symbol}; interval: {self.interval.name}; updated: {self.updated}; inserted: {self.inserted}"
+        return f"symbol: {self.symbol}; interval: {self.interval.name}; generated: {self.generated}; updated: {self.updated}; inserted: {self.inserted}"

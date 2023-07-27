@@ -56,54 +56,65 @@ class Engine(threading.Thread):
 
     def get_history_symbol(self, symbol: str, config: SymbolConfig, current_time):
         # get history candles and indicators per symbol and add to state
-        print("get_history_symbol", symbol)
-        candle_events: list[CandleEvent] = []
-        for interval in config.history_intervals():
-            history_candles = self.quote_service.get_candles(
-                symbol, interval, current_time, config.history_candles_no())
-            # print(curr_candles)
-            candle_event = self.market_watch_manager.add_update_candles(symbol, interval,
-                                                                        history_candles)
-            candle_events.append(candle_event)
-            self.create_update_indicators(config, candle_event)
-
-        for interval in config.history_intervals_generated():
-            source_interval = market_watch_utils.get_source_interval_for_candle_generation(config.current_intervals(),interval)
-            source_candle_event = market_watch_utils.get_candle_event_for_interval(candle_events, source_interval)
-            candle_event = self.market_watch_manager.generate_candles(
-                symbol, source_interval, source_candle_event, interval)
-            candle_events.append(candle_event)
-            self.create_update_indicators(config, candle_event)
-        # printing things
-        self.market_watch_manager.print_market_watch(symbol)
+        print(f"--- get_history_symbol:{symbol} ---")
+        candle_events = self.populate_market_watch(
+            symbol, config, current_time, True)
         self.all_candle_events.append(candle_events)
 
     def get_current_symbol(self, symbol: str, config: SymbolConfig, current_time):
         print(f"--- get_current_symbol:{symbol} ---")
-        # get current candles and indicators and add to state
+        candle_events = self.populate_market_watch(
+            symbol, config, current_time, False)
+        self.all_candle_events.append(candle_events)
+
+    def populate_market_watch(self, symbol, config, current_time, is_history):
+        if is_history:
+            intervals = sorted(config.history_intervals())
+            intervals_generated = sorted(config.history_intervals_generated())
+            candles_no = config.history_candles_no()
+        else:
+            intervals = sorted(config.current_intervals())
+            intervals_generated = sorted(config.current_intervals_generated())
+            candles_no = config.current_candles_no()
+
         candle_events: list[CandleEvent] = []
-        for interval in config.current_intervals():
-            curr_candles = self.quote_service.get_candles(
-                symbol, interval, current_time, config.current_candles_no())
-            candle_event = self.market_watch_manager.add_update_candles(symbol, interval,
-                                                                        curr_candles)
-            candle_events.append(candle_event)
-            self.create_update_indicators(config, candle_event)
-        
-        for interval in config.current_intervals_generated():
-            # for 1d generate from 1hr candles,so go from lower to higher, 5m-> 1hr->1d, 
-            # in this case vwill needed just 12 history candles for 1hr
-            source_interval = market_watch_utils.get_source_interval_for_candle_generation(config.current_intervals(),interval)
-            source_candle_event = market_watch_utils.get_candle_event_for_interval(candle_events, source_interval)
-            candle_event = self.market_watch_manager.generate_candles(
-                symbol, source_interval, source_candle_event, interval)
-            candle_events.append(candle_event)
-            self.create_update_indicators(config, candle_event)
+        all_intervals = sorted(
+            config.current_intervals() + config.history_intervals())
+
+        # popiulate candles from excahnge
+        for interval in intervals:
+            self.populate_fetch_interval(
+                symbol, config, current_time, candles_no, candle_events, interval)
+        # generate candles from existig
+        for interval in intervals_generated:
+            self.populate_generated_interval(
+                symbol, config, candle_events, all_intervals, interval)
+
         # printing things
         self.market_watch_manager.print_market_watch(symbol)
         # candle_events: list[CandleEvent] is for a perticular time for all intervals for a single symbol
         print("candle_events:", candle_events)
-        self.all_candle_events.append(candle_events)
+        return candle_events
+
+    def populate_generated_interval(self, symbol, config, candle_events, all_intervals, interval):
+        # for 1d generate from 1hr candles,so go from lower to higher, 5m-> 1hr->1d,
+        # in this case vwill needed just 12 history candles for 1hr
+        source_interval = market_watch_utils.get_source_interval_for_candle_generation(
+            all_intervals, interval)
+        source_candle_event = market_watch_utils.get_candle_event_for_interval(
+            candle_events, source_interval)
+        candle_event = self.market_watch_manager.generate_candles(
+            symbol, source_interval, source_candle_event, interval)
+        candle_events.append(candle_event)
+        self.create_update_indicators(config, candle_event)
+
+    def populate_fetch_interval(self, symbol, config, current_time, candles_no, candle_events, interval):
+        candles = self.quote_service.get_candles(
+            symbol, interval, current_time, candles_no)
+        candle_event = self.market_watch_manager.add_update_candles(symbol, interval,
+                                                                    candles)
+        candle_events.append(candle_event)
+        self.create_update_indicators(config, candle_event)
 
     def create_update_indicators(self, config, candle_event):
         for indicator in config.indicators():

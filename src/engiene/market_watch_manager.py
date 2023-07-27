@@ -70,7 +70,7 @@ class MarketWatchManager:
         # somehow also comapring for updated items if needed else just replace everything will be easy
         # current implimentation is comparing row by row
         df = self.market_watch[symbol][interval]
-        candle_event = CandleEvent(symbol, interval)
+        candle_event = CandleEvent(symbol, interval, False)
         for candle in candles:
             # last_index = self.market_watch[symbol]["length"]
             wo_time = [candle.o, candle.h, candle.l, candle.c, candle.v]
@@ -99,10 +99,14 @@ class MarketWatchManager:
 
     def generate_candles(self, symbol: str, source_interval: INTERVAL_TYPE,
                          source_candle_event: CandleEvent, target_interval: INTERVAL_TYPE):
+        print(
+            f"generating candle for {target_interval.name} from {source_interval.name}")
+        print("source_candle_event is", source_candle_event)
         source_df = self.market_watch[symbol][source_interval]
         source_start_index, _ = source_candle_event.get_start_end_time()
         # todo will update formula one time offset is added to exchange
-        start_index = math.floor(source_start_index/target_interval.value)*target_interval.value
+        start_index = math.floor(
+            source_start_index/target_interval.value)*target_interval.value
         updated_only_df: pd.DataFrame = source_df.loc[start_index:]
         generated_df: pd.DataFrame = updated_only_df.groupby(np.floor(
             updated_only_df.index/target_interval.value)*target_interval.value).agg(
@@ -113,9 +117,8 @@ class MarketWatchManager:
             volume=('volume', 'sum')
         )
         generated_df.index = generated_df.index.astype('int64')
-        # print("generated_df", generated_df)
 
-        candle_event = CandleEvent(symbol, target_interval)
+        candle_event = CandleEvent(symbol, target_interval, True)
         df = self.market_watch[symbol][target_interval]
         for index, row in generated_df.iterrows():
             time: int = index  # type: ignore
@@ -140,7 +143,8 @@ class MarketWatchManager:
             else:
                 # inserted
                 candle_event.add_to_inserted(time)
-                df.loc[time, default_columns[1:]] = [row.open, row.high, row.low, row.close, row.volume]
+                df.loc[time, default_columns[1:]] = [
+                    row.open, row.high, row.low, row.close, row.volume]
 
         return candle_event
 

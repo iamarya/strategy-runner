@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import Enum, IntEnum
 
 
-class INTERVAL_TYPE(Enum):
+class INTERVAL_TYPE(IntEnum):
     S5 = 5  # testing purpose
     M5 = 300
     M15 = 900
