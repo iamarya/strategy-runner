@@ -29,3 +29,9 @@ class DB_TYPE(Enum):
 
     def __repr__(self) -> str:
         return self.name
+
+class EVENT_TYPE(Enum):
+    CANDLE_EVENT = 1,
+    
+
+
