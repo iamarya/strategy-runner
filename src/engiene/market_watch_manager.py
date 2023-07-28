@@ -66,11 +66,12 @@ class MarketWatchManager:
         return self.market_watch[symbol].length
 
     def add_update_candles(self, symbol: str, interval: INTERVAL_TYPE, candles: list[Candle]) -> CandleEvent:
+        df = self.market_watch[symbol][interval]
+        candle_event = CandleEvent(symbol, interval, False)
+        # too slow for history only, todo add as a single df
         # improvment can be done like add all row at a time
         # somehow also comapring for updated items if needed else just replace everything will be easy
         # current implimentation is comparing row by row
-        df = self.market_watch[symbol][interval]
-        candle_event = CandleEvent(symbol, interval, False)
         for candle in candles:
             # last_index = self.market_watch[symbol]["length"]
             wo_time = [candle.o, candle.h, candle.l, candle.c, candle.v]
@@ -99,9 +100,9 @@ class MarketWatchManager:
 
     def generate_candles(self, symbol: str, source_interval: INTERVAL_TYPE,
                          source_candle_event: CandleEvent, target_interval: INTERVAL_TYPE):
-        print(
-            f"generating candle for {target_interval.name} from {source_interval.name}")
-        print("source_candle_event is", source_candle_event)
+        # print(
+        #     f"generating candle for {target_interval.name} from {source_interval.name}")
+        # print("source_candle_event is", source_candle_event)
         source_df = self.market_watch[symbol][source_interval]
         source_start_index, _ = source_candle_event.get_start_end_time()
         # todo will update formula one time offset is added to exchange
@@ -155,7 +156,7 @@ class MarketWatchManager:
     list[list[list[CandleEvent]]] is for a all time for all intervals for all symbol 
     '''
 
-    def synthesized_all_candle_events_all_time(self) -> list[list[list[CandleEvent]]]:
+    def synthesized_all_candle_events_all_time(self) -> list[dict[str, list[CandleEvent]]]:
         # get all intervals for history candles
 
         # getsmallest interval

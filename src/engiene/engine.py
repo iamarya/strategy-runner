@@ -1,3 +1,4 @@
+import os
 import threading
 import schedule
 import time
@@ -22,7 +23,7 @@ class Engine(threading.Thread):
         self.indicator_manager = IndicatorManager(self.market_watch_manager)
         self.quote_service = QuoteService()
         self.strategy_manager = StrategyManager(Strategy())
-        self.all_candle_events = []  # todo may be better to make a dict()
+        self.all_candle_events: dict[str, list[CandleEvent]] = {} 
 
     def run(self):
         # get history candles and indicators
@@ -53,19 +54,27 @@ class Engine(threading.Thread):
             call.start()
         for call in calls:
             call.join()
+        print('Time talen to run get_history_all',
+              datetime.now() - current_time)
 
     def get_history_symbol(self, symbol: str, config: SymbolConfig, current_time):
-        # get history candles and indicators per symbol and add to state
-        print(f"--- get_history_symbol:{symbol} ---")
-        candle_events = self.populate_market_watch(
-            symbol, config, current_time, True)
-        self.all_candle_events.append(candle_events)
+        try:
+            # get history candles and indicators per symbol and add to state
+            print(f"--- get_history_symbol:{symbol} ---")
+            candle_events = self.populate_market_watch(
+                symbol, config, current_time, True)
+            self.all_candle_events[symbol] = candle_events
+        except:
+            os._exit(0)
 
     def get_current_symbol(self, symbol: str, config: SymbolConfig, current_time):
         print(f"--- get_current_symbol:{symbol} ---")
-        candle_events = self.populate_market_watch(
-            symbol, config, current_time, False)
-        self.all_candle_events.append(candle_events)
+        try:
+            candle_events = self.populate_market_watch(
+                symbol, config, current_time, False)
+            self.all_candle_events[symbol] = candle_events
+        except:
+            os._exit(0)
 
     def populate_market_watch(self, symbol, config, current_time, is_history):
         if is_history:
@@ -91,9 +100,9 @@ class Engine(threading.Thread):
                 symbol, config, candle_events, all_intervals, interval)
 
         # printing things
-        self.market_watch_manager.print_market_watch(symbol)
+        # self.market_watch_manager.print_market_watch(symbol)
         # candle_events: list[CandleEvent] is for a perticular time for all intervals for a single symbol
-        print("candle_events:", candle_events)
+        # print("candle_events:", candle_events)
         return candle_events
 
     def populate_generated_interval(self, symbol, config, candle_events, all_intervals, interval):
@@ -123,12 +132,12 @@ class Engine(threading.Thread):
 
     def run_scheduler(self):
         print(f"\n\n === Schedluer Triggered @ {datetime.now()} ===\n")
-        self.all_candle_events = []
         self.get_current_all()
         self.strategy_manager.notify(self.all_candle_events)
 
     def get_current_all(self):
         calls = []
+        self.all_candle_events = {}
         current_time = datetime.now()
         for symbols_config in self.engine_config.get_all_configs():
             for symbol in symbols_config.symbols:
@@ -137,6 +146,6 @@ class Engine(threading.Thread):
         for call in calls:
             call.start()
         for call in calls:
-            call.join()
-        print('Time talen to run fetch all quotes',
+            call.join() #todo check if anythread failed by returning bool and stop
+        print('Time talen to run get_current_all',
               datetime.now() - current_time)

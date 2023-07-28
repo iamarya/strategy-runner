@@ -9,38 +9,39 @@ strategy_config = {
 
 }
 
-events  = [
-[{
-	symbol: "BTC",
-	interval: M5,
-	updated: [1234, 1235], #timestamps
-	inserted: [1236]
-},
-{
-	symbol: "BTC",
-	interval: D1,
-	updated: [1234, 1235], #timestamps
-	inserted: [1236]
-}]
-,
-[{
-	symbol: "TCS",
-	interval: M5,
-	updated: [1234, 1235], #timestamps
-	inserted: [1236]
-},
-{
-	symbol: "TCS",
-	interval: D1,
-	updated: [1234, 1235], #timestamps
-	inserted: [1236]
-}]
-]
+all_candle_events  = 
+{'BTC':
+	[{
+		symbol: "BTC",
+		interval: M5,
+		updated: [1234, 1235], #timestamps
+		inserted: [1236]
+	},
+	{
+		symbol: "BTC",
+		interval: D1,
+		updated: [1234, 1235], #timestamps
+		inserted: [1236]
+	}],
+'TCS':
+	[{
+		symbol: "TCS",
+		interval: M5,
+		updated: [1234, 1235], #timestamps
+		inserted: [1236]
+	},
+	{
+		symbol: "TCS",
+		interval: D1,
+		updated: [1234, 1235], #timestamps
+		inserted: [1236]
+	}]
+}
 '''
 class StrategyManager:
     def __init__(self, strategies: Strategy) -> None:
         # register strategies
         pass
 
-    def notify(self, candle_events:list[list[CandleEvent]]):
+    def notify(self, all_candle_events:dict[str, list[CandleEvent]]):
         pass

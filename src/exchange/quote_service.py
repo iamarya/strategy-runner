@@ -20,5 +20,5 @@ class QuoteService:
         # should not happen, even if comes it will check and update without issue
         # if len(candles) > no_candles:
         #     candles = candles [-no_candles:]
-        print("candles recieved for above inputs:", candles)
+        # print("candles recieved for above inputs:", candles)
         return candles
