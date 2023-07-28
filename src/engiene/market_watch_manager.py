@@ -64,6 +64,9 @@ class MarketWatchManager:
 
     def get_length(self, symbol: str):
         return self.market_watch[symbol].length
+    
+    def add_candles(self, symbol: str, interval: INTERVAL_TYPE, candles: list[Candle]) -> CandleEvent:
+        pass
 
     def add_update_candles(self, symbol: str, interval: INTERVAL_TYPE, candles: list[Candle]) -> CandleEvent:
         df = self.market_watch[symbol][interval]

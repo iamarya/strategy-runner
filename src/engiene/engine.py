@@ -100,9 +100,11 @@ class Engine(threading.Thread):
                 symbol, config, candle_events, all_intervals, interval)
 
         # printing things
-        # self.market_watch_manager.print_market_watch(symbol)
+        self.market_watch_manager.print_market_watch(symbol)
         # candle_events: list[CandleEvent] is for a perticular time for all intervals for a single symbol
-        # print("candle_events:", candle_events)
+        if not is_history:
+            # todo print properly
+            print("candle_events:", candle_events)
         return candle_events
 
     def populate_generated_interval(self, symbol, config, candle_events, all_intervals, interval):
