@@ -32,6 +32,7 @@ market_watch = {
 class MarketWatchManager:
 
     def __init__(self, engine_config: EngineConfig) -> None:
+        # todo make it another class, market_watch_service
         self.market_watch = dict()
         # setup initial ma using config
         for symbols_config in engine_config.get_all_configs():
@@ -64,9 +65,6 @@ class MarketWatchManager:
 
     def get_length(self, symbol: str):
         return self.market_watch[symbol].length
-    
-    def add_candles(self, symbol: str, interval: INTERVAL_TYPE, candles: list[Candle]) -> CandleEvent:
-        pass
 
     def add_update_candles(self, symbol: str, interval: INTERVAL_TYPE, candles: list[Candle]) -> CandleEvent:
         df = self.market_watch[symbol][interval]
@@ -75,6 +73,8 @@ class MarketWatchManager:
         # improvment can be done like add all row at a time
         # somehow also comapring for updated items if needed else just replace everything will be easy
         # current implimentation is comparing row by row
+        # added git statsh for this fix, but simplier will be just create a new one for history and run below code for current
+        # so check if df is null create else run below
         for candle in candles:
             # last_index = self.market_watch[symbol]["length"]
             wo_time = [candle.o, candle.h, candle.l, candle.c, candle.v]
