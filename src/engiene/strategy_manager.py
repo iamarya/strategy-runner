@@ -4,7 +4,9 @@ from src.models.event import CandleEvent
 from src.strategy.strategy import Strategy
 '''
 strategy_config = {
-	# strategy1 to symbol 1 to 1 per therad
+	# strategy1 to symbol 1? to 1 per therad
+    	# i think always run one instance of strategy and call in a loop for all symbols it needs
+        # one strategy needs one sheet so should not multithread this
 	# but dont create thread if not used by strategy so some config needed
     # this config may need to have interval a perticular interval/s 
 
