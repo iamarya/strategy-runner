@@ -5,7 +5,7 @@
   STRATEGY RUNNER
 </h1>
 
-<h4 align="center">This is a trading bot where you can do back test as well.</h4>
+<h4 align="center">This is a trading bot where you can do back testing, papaer trading and live tradings.</h4>
 
 ## Features
 - Backtesting
@@ -17,9 +17,9 @@
 - Two type of strategy, 
   - one depends on candle event, which can be backtested
   - other type depends cant be backtested depends on timely triggered.
-  - evaluation of strategy: not just total return also add risk, volatility, drawdown => sharp ratio
-  - logging framework
-  - unit test cases 
+- evaluation of strategy: not just total return also add risk, volatility, drawdown => sharp ratio
+- logging framework
+- unit test cases 
   
 
 ## License
