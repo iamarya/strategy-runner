@@ -1,5 +1,7 @@
 from enum import Enum, IntEnum
 
+# IntEnum for comparing enum type <, >
+
 
 class INTERVAL_TYPE(IntEnum):
     S5 = 5  # testing purpose
@@ -30,8 +32,30 @@ class DB_TYPE(Enum):
     def __repr__(self) -> str:
         return self.name
 
+
 class EVENT_TYPE(Enum):
-    CANDLE_EVENT = 1,
-    
+    CANDLE_EVENT = 1
+    TIMER_EVENT = 2
 
 
+class STATE(Enum):
+    START = 1
+    BUY_PENDING = 2
+    BUY_CONFIRMED = 3
+    BUY_CANCELED = 4
+    SELL_PENDING = 5
+    SELL_CONFIRMED = 6
+    SELL_CANCELED = 7
+    EXITED = 8
+    SL_TRIGGERED = 9
+    END = 10
+
+
+class ACTION(Enum):
+    BUY = 1
+    BUY_CONFIRM = 2
+    BUY_CANCEL = 3
+    SELL = 4
+    SELL_CONFIRM = 5
+    SELL_CANCEL = 6
+    EXIT = 7

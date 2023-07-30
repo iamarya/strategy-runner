@@ -13,8 +13,7 @@ class Exchange:
 
 
 class MockExchange(Exchange):
-    # charge = 1.5 charges 
-    # has propoties exchange_start_time, end_time, timezone todo
+    # has propoties charge = 1.5, exchange_start_time, end_time, timezone todo
 
     def get_candles(self, symbol: str, inetval: INTERVAL_TYPE, from_time: int, to_time: int) -> list[Candle]:
         candles = []

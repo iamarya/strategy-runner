@@ -40,4 +40,4 @@ class CandleEvent:
         return start_index, end_index
 
     def __repr__(self) -> str:
-        return f"symbol: {self.symbol}; interval: {self.interval.name}; generated: {self.generated}; updated: {self.updated}; inserted: {self.inserted}"
+        return f"\nsymbol: {self.symbol}; interval: {self.interval.name}; generated: {self.generated}; updated: {self.updated}; inserted: {self.inserted}"

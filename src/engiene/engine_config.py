@@ -3,7 +3,7 @@ from src.models.enums import *
 from src.indicators.sma import SMA
 from src.indicators.indicator import Indicator
 
-engine_config = {
+sample_config = {
     "backtest": False,  # flag changes behaviour of engine and strategies will bound use paper trading with inmeroy db
     "symbol_configs": [
         {

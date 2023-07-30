@@ -3,6 +3,7 @@ import threading
 import schedule
 import time
 from datetime import datetime
+from src.engiene.event_queue import EventQueue
 from src.models.event import CandleEvent
 from src.engiene.indicator_manager import IndicatorManager
 from src.engiene.strategy_manager import StrategyManager
@@ -16,18 +17,22 @@ import src.utils.market_watch_utils as market_watch_utils
 
 class Engine(threading.Thread):
 
-    def __init__(self, engine_config) -> None:
+    def __init__(self, engine_config: EngineConfig) -> None:
         threading.Thread.__init__(self, name="engine_thread", daemon=True)
-        self.engine_config = EngineConfig(engine_config)
+        self.engine_config = engine_config
         self.market_watch_manager = MarketWatchManager(self.engine_config)
         self.indicator_manager = IndicatorManager(self.market_watch_manager)
         self.quote_service = QuoteService()
-        self.strategy_manager = StrategyManager(engine_config)
-        self.all_candle_events: dict[str, list[CandleEvent]] = {} 
+        self.event_queue = EventQueue()
+        self.strategy_manager = StrategyManager(
+            self.engine_config, self.event_queue)
+        self.all_candle_events: dict[str, list[CandleEvent]] = {}
 
     def run(self):
         # get history candles and indicators
         self.get_history_all()
+        threading.Thread(target=self.run_strategies, args=(),
+                         daemon=True, name='run_strategies').start()
         if not self.engine_config.is_backtest():
             # configure scheduler
             # schedule.every(5).minutes.at(":05").do(self.run_market_watch_scheduler)
@@ -35,31 +40,37 @@ class Engine(threading.Thread):
             while True:
                 self.all_candle_events = {}
                 schedule.run_pending()
-                self.run_pending_strategies()
                 time.sleep(1)
         else:
             # backtesting only
             print("doing backtesting only")
             synthesized_all_candle_events_all_time = self.market_watch_manager.synthesized_all_candle_events_all_time()
             for all_candle_events_at_time in synthesized_all_candle_events_all_time:
-                self.strategy_manager.notify(all_candle_events_at_time)
-    
-    def run_pending_strategies(self):
-        strategies = self.strategy_manager.notify(self.all_candle_events)
-        calls = []
-        current_time = datetime.now()
-        for strategy in strategies:
-            calls.append(threading.Thread(
-                target=self.strategy_manager.run, args=(strategy, self.all_candle_events), daemon=True))
-        for call in calls:
-            call.start()
-        for call in calls:
-            call.join()
-        print('Time talen to run run_pending_strategies',
-              datetime.now() - current_time)
+                self.event_queue.push(all_candle_events_at_time)
 
+    # todo move this to stratgey_runner
+    def run_strategies(self):
+        while True:
+            current_time = datetime.now()
+            strategies = self.strategy_manager.notify()
+
+            calls = []
+            for strategy, event in strategies:
+                calls.append(threading.Thread(
+                    target=self.strategy_manager.run, args=(strategy, event), daemon=True))
+            for call in calls:
+                call.start()
+            for call in calls:
+                call.join()
+            if strategies:
+                print('Time taken to run run_pending_strategies',
+                      datetime.now() - current_time)
+            time.sleep(1)
+
+    # todo all this to market_runner
     def get_history_all(self):
         print("inside get_history_all")
+        # incase of data extractio or backtesting it might be some past date
         current_time = datetime.now()
         calls = []
         for symbols_config in self.engine_config.get_all_configs():
@@ -70,7 +81,7 @@ class Engine(threading.Thread):
             call.start()
         for call in calls:
             call.join()
-        print('Time talen to run get_history_all',
+        print('Time taken to run get_history_all',
               datetime.now() - current_time)
 
     def get_history_symbol(self, symbol: str, config: SymbolConfig, current_time):
@@ -119,7 +130,6 @@ class Engine(threading.Thread):
         self.market_watch_manager.print_market_watch(symbol)
         # candle_events: list[CandleEvent] is for a perticular time for all intervals for a single symbol
         if not is_history:
-            # todo print properly
             print("candle_events:", candle_events)
         return candle_events
 
@@ -151,6 +161,8 @@ class Engine(threading.Thread):
     def run_market_watch_scheduler(self):
         print(f"\n\n === Schedluer Triggered @ {datetime.now()} ===\n")
         self.get_current_all()
+        if self.all_candle_events:
+            self.event_queue.push(self.all_candle_events)
 
     def get_current_all(self):
         calls = []
@@ -162,6 +174,6 @@ class Engine(threading.Thread):
         for call in calls:
             call.start()
         for call in calls:
-            call.join() #todo check if any thread failed by returning bool and stop
-        print('Time talen to run get_current_all',
+            call.join()  # todo check if any thread failed by returning bool and stop
+        print('Time taken to run get_current_all',
               datetime.now() - current_time)

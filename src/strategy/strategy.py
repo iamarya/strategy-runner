@@ -9,7 +9,10 @@ class Strategy:
         pass
 
     def execute(self, all_candle_events: dict[str, list[CandleEvent]]):
+        # this will run parellaly
         pass
 
-    def is_ready(self, all_candle_events: dict[str, list[CandleEvent]]) -> bool:
+    def filter(self, all_candle_events: dict[str, list[CandleEvent]]) -> bool:
+        # no api will be called here as it will run syncronusly
+        # no logic which have high processing time will be called here
         return True
