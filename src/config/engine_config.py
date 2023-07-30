@@ -1,59 +1,7 @@
-from db.db import GSheetDb, InMemoryDb
-from exchange.exchange import CoinBaseExchange, Exchange, MockExchange
+from exchange.exchange import Exchange
 from strategy.strategy import Strategy
-from strategy.swing_trading_strategy import SwingTradingStrategy
 from models.enums import *
-from indicators.sma import SMA
 from indicators.indicator import Indicator
-
-sample_config = {
-    # flag changes behaviour of engine and strategies will bound use paper trading with inmeroy db
-    "backtest": False,
-    "symbol_configs": [
-        {
-            # add multiple symbools here for same config
-            "symbols": ["BTC"],
-            "symbol_config":  {
-                "current_intervals": [INTERVAL_TYPE.S5],
-                "current_intervals_generated": [INTERVAL_TYPE.HR1, INTERVAL_TYPE.D1],
-                "current_candles_no": 2,
-                "history_intervals": [INTERVAL_TYPE.S5, INTERVAL_TYPE.HR1, INTERVAL_TYPE.D1],
-                "history_intervals_generated": [],
-                "history_candles_no": 3,
-                "indicators": [SMA(5)],
-                "exchange_type": EXCAHNGE_TYPE.MOCK_EXCAHNGE
-            }
-        }
-    ],
-    "strategy_configs": [
-        {
-            # will be used for backtest and paper trading
-            "strategy": SwingTradingStrategy(),
-            "db_type": DB_TYPE.IN_MEMORY,  # IN_MEMORY or GSHEET
-            "exchange_type": EXCAHNGE_TYPE.MOCK_EXCAHNGE
-        },
-        # {
-        #     # will be used for live trading
-        #     "strategy": Strategy(),
-        #     "db_type": DB_TYPE.G_SHEET,
-        #     "exchange_type": EXCAHNGE_TYPE.COINBASE_EXCHANGE
-        # }
-    ],
-    "db_configs": {
-        DB_TYPE.IN_MEMORY: InMemoryDb(),
-        DB_TYPE.G_SHEET: GSheetDb()
-    },
-    "exchange_configs": {
-        EXCAHNGE_TYPE.MOCK_EXCAHNGE: MockExchange(),
-        EXCAHNGE_TYPE.COINBASE_EXCHANGE: CoinBaseExchange()
-    }
-}
-
-# backtest means some mock exchange/ real exchange(quote) will be used and strategies will be use inmemory db
-# and mock order service
-# papaer trade means strategy will use db as inmemory/gsheet and mock order serice
-# live trade will use gsheet and actual order service
-
 
 class SymbolConfig:
     def __init__(self, symbol_config, exchange_config) -> None:
