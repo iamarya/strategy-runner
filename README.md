@@ -5,7 +5,7 @@
   STRATEGY RUNNER
 </h1>
 
-<h4 align="center">This is a trading bot where you can do back test as well.</h4>
+<h4 align="center">This is a trading bot where you can do back testing, papaer trading and live tradings.</h4>
 
 ## Features
 - Backtesting
