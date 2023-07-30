@@ -10,7 +10,7 @@ class Strategy:
     def __init__(self) -> None:
         pass
 
-    def execute(self, all_candle_events: dict[str, list[CandleEvent]]):
+    def execute(self):
         # this will run parellaly
         pass
 

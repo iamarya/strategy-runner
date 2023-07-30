@@ -55,9 +55,9 @@ class Engine(threading.Thread):
             strategies = self.strategy_manager.notify()
 
             calls = []
-            for strategy, event in strategies:
+            for strategy in strategies:
                 calls.append(threading.Thread(
-                    target=self.strategy_manager.run, args=(strategy, event), daemon=True))
+                    target=self.strategy_manager.run, args=(strategy,), daemon=True))
             for call in calls:
                 call.start()
             for call in calls:
