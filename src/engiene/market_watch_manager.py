@@ -95,6 +95,9 @@ class MarketWatchManager:
         # print(self.market_watch[symbol])
         # print("candle_event", candle_event)
         return candle_event
+    
+    def add_candles(self, symbol: str, interval: INTERVAL_TYPE, candles: list[Candle]) -> CandleEvent:
+        pass
 
     '''
     DOUBT : candle timestamp should be future or past/ completed candle?????
