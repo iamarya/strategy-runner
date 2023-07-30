@@ -19,7 +19,7 @@ sample_config = {
                 "current_candles_no": 2,
                 "history_intervals": [INTERVAL_TYPE.S5, INTERVAL_TYPE.HR1, INTERVAL_TYPE.D1],
                 "history_intervals_generated": [],
-                "history_candles_no": 3,
+                "history_candles_no": 5,
                 "indicators": [SMA(5)],
                 "exchange_type": EXCAHNGE_TYPE.MOCK_EXCAHNGE
             }

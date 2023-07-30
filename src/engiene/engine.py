@@ -148,9 +148,11 @@ class Engine(threading.Thread):
     def populate_fetch_interval(self, symbol, config, current_time, candles_no, candle_events, interval, is_history):
         candles = self.quote_service.get_candles(config.exchange(),
                                                  symbol, interval, current_time, candles_no)
-        if is_history:
+        if not is_history:
             candle_event = self.market_watch_manager.add_update_candles(symbol, interval,candles)
-        else:                                                            
+        else:
+            # self.market_watch_manager.add_update_candles will work here aswell 
+            # but add_candles is more efficient by just adding all at a time
             candle_event = self.market_watch_manager.add_candles(symbol, interval,candles)
         candle_events.append(candle_event)
         self.create_update_indicators(config, candle_event)

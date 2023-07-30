@@ -19,7 +19,7 @@ market_watch = {
         M5: DataFrame,
         D1: DataFrame,
         "indicators": [i1, i2], #not added yet, may be not needed
-        "ltp": 123,
+        "ltp": 123.2,
         "last_updated_time": 12222987654,
         "length": 10, # for which df? todo need to update structure or remove this
         "exchange_timezone": UTC #not added yet
@@ -43,9 +43,9 @@ class MarketWatchManager:
                 indicator_coulmns = []
                 for indicator in config.indicators():
                     indicator_coulmns.extend(indicator.get_columns())
-                all_columns = default_columns+indicator_coulmns
+                all_columns = default_columns + indicator_coulmns
                 for interval in config.history_intervals() + config.current_intervals() \
-                        + config.history_intervals_generated() + config.current_intervals_generated():
+                                + config.history_intervals_generated() + config.current_intervals_generated():
                     df = pd.DataFrame(columns=all_columns)
                     df.set_index("time", inplace=True)
                     mw_item[interval] = df
@@ -69,12 +69,6 @@ class MarketWatchManager:
     def add_update_candles(self, symbol: str, interval: INTERVAL_TYPE, candles: list[Candle]) -> CandleEvent:
         df = self.market_watch[symbol][interval]
         candle_event = CandleEvent(symbol, interval, False)
-        # too slow for history only, todo add as a single df
-        # improvment can be done like add all row at a time
-        # somehow also comapring for updated items if needed else just replace everything will be easy
-        # current implimentation is comparing row by row
-        # added git statsh for this fix, but simplier will be just create a new one for history and run below code for current
-        # so check if df is null create else run below
         for candle in candles:
             # last_index = self.market_watch[symbol]["length"]
             wo_time = [candle.o, candle.h, candle.l, candle.c, candle.v]
@@ -89,15 +83,29 @@ class MarketWatchManager:
                 df.loc[candle.t, default_columns[1:]] = wo_time
                 # self.market_watch[symbol]["length"] = last_index+1
         last_updated_time = self.market_watch[symbol]["last_updated_time"]
-        if last_updated_time == None or last_updated_time < candles[-1].t:
+        if last_updated_time is None or last_updated_time < candles[-1].t:
             self.market_watch[symbol]["last_updated_time"] = candles[-1].t
         self.market_watch[symbol]["ltp"] = candles[-1].c
         # print(self.market_watch[symbol])
         # print("candle_event", candle_event)
         return candle_event
-    
+
     def add_candles(self, symbol: str, interval: INTERVAL_TYPE, candles: list[Candle]) -> CandleEvent:
-        pass
+        df: pd.DataFrame = self.market_watch[symbol][interval]
+        # create a new index series from candles
+        add_df = pd.DataFrame([[c.t, c.o, c.h, c.l, c.c, c.v] for c in candles], columns=default_columns)
+        add_df.set_index("time", inplace=True)
+        add_df.index = add_df.index.astype('int64')
+
+        df = pd.concat([df, add_df])
+        candle_event = CandleEvent(symbol, interval, False)
+        candle_event.add_to_inserted_as_list(df.index.to_list())
+        self.market_watch[symbol][interval] = df
+        last_updated_time = self.market_watch[symbol]["last_updated_time"]
+        if last_updated_time is None or last_updated_time < candles[-1].t:
+            self.market_watch[symbol]["last_updated_time"] = candles[-1].t
+        self.market_watch[symbol]["ltp"] = candles[-1].c
+        return candle_event
 
     '''
     DOUBT : candle timestamp should be future or past/ completed candle?????
@@ -113,10 +121,10 @@ class MarketWatchManager:
         source_start_index, _ = source_candle_event.get_start_end_time()
         # todo will update formula one time offset is added to exchange
         start_index = math.floor(
-            source_start_index/target_interval.value)*target_interval.value
+            source_start_index / target_interval.value) * target_interval.value
         updated_only_df: pd.DataFrame = source_df.loc[start_index:]
         generated_df: pd.DataFrame = updated_only_df.groupby(by=np.floor(
-            updated_only_df.index/target_interval.value)*target_interval.value).agg(
+            updated_only_df.index / target_interval.value) * target_interval.value).agg(
             open=('open', 'first'),
             high=('high', 'max'),
             low=('low', 'min'),
