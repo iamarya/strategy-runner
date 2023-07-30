@@ -10,7 +10,7 @@ from engiene.strategy_manager import StrategyManager
 from exchange.quote_service import QuoteService
 from engiene.market_watch_manager import MarketWatchManager
 from models.enums import INTERVAL_TYPE
-from engiene.engine_config import EngineConfig, SymbolConfig
+from config.engine_config import EngineConfig, SymbolConfig
 from strategy.strategy import Strategy
 import utils.market_watch_utils as market_watch_utils
 
@@ -25,7 +25,7 @@ class Engine(threading.Thread):
         self.quote_service = QuoteService()
         self.event_queue = EventQueue()
         self.strategy_manager = StrategyManager(
-            self.engine_config, self.event_queue)
+            self.engine_config.get_strategies(), self.event_queue)
         self.all_candle_events: dict[str, list[CandleEvent]] = {}
 
     def run(self):
@@ -73,7 +73,7 @@ class Engine(threading.Thread):
         # incase of data extractio or backtesting it might be some past date
         current_time = datetime.now()
         calls = []
-        for symbols_config in self.engine_config.get_all_configs():
+        for symbols_config in self.engine_config.get_symbols_configs():
             for symbol in symbols_config.symbols:
                 calls.append(threading.Thread(
                     target=self.get_history_symbol, args=(symbol, symbols_config.symbol_config, current_time), daemon=True))
@@ -146,8 +146,8 @@ class Engine(threading.Thread):
         self.create_update_indicators(config, candle_event)
 
     def populate_fetch_interval(self, symbol, config, current_time, candles_no, candle_events, interval):
-        candles = self.quote_service.get_candles(
-            symbol, interval, current_time, candles_no)
+        candles = self.quote_service.get_candles(config.exchange(),
+                                                 symbol, interval, current_time, candles_no)
         candle_event = self.market_watch_manager.add_update_candles(symbol, interval,
                                                                     candles)
         candle_events.append(candle_event)
@@ -167,7 +167,7 @@ class Engine(threading.Thread):
     def get_current_all(self):
         calls = []
         current_time = datetime.now()
-        for symbols_config in self.engine_config.get_all_configs():
+        for symbols_config in self.engine_config.get_symbols_configs():
             for symbol in symbols_config.symbols:
                 calls.append(threading.Thread(
                     target=self.get_current_symbol, args=(symbol, symbols_config.symbol_config, current_time), daemon=True))

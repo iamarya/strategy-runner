@@ -26,6 +26,9 @@ class MockExchange(Exchange):
                            o=random.randint(1, 10), h=random.randint(1, 10), l=random.randint(1, 10), c=random.randint(1, 10), v=100))
             current_candle_time = current_candle_time+inetval.value
         return candles
+    
+class CoinBaseExchange(Exchange):
+    pass
 
 # python -m strategy_runner.exchange.exchange
 # for tesing

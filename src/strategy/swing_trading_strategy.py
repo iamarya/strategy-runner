@@ -7,7 +7,7 @@ from strategy.strategy import Strategy
 class SwingTradingStrategy(Strategy):
 
     def __init__(self) -> None:
-        pass
+        Strategy.__init__(self)
 
     def execute(self, event:list[CandleEvent]):
         pass

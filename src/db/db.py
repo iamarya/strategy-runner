@@ -12,8 +12,11 @@ class Db:
     def update(self):
         pass
     
-    def getAll():
+    def get_all(self):
         pass
 
 class InMemoryDb(Db):
+    pass
+
+class GSheetDb(Db):
     pass

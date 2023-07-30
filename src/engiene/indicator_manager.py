@@ -1,6 +1,6 @@
 from models.candle import Candle
 from engiene.market_watch_manager import MarketWatchManager
-from engiene.engine_config import SymbolConfig
+from config.engine_config import SymbolConfig
 from models.event import CandleEvent
 from indicators.indicator import Indicator
 

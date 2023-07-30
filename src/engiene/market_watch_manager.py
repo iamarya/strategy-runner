@@ -1,7 +1,7 @@
 import math
 from models.candle import Candle
 from models.enums import INTERVAL_TYPE
-from engiene.engine_config import EngineConfig, SymbolConfig
+from config.engine_config import EngineConfig, SymbolConfig
 import pandas as pd
 import numpy as np
 
@@ -35,7 +35,7 @@ class MarketWatchManager:
         # todo make it another class, market_watch_service and a MarketWatch class
         self.market_watch = dict()
         # setup initial ma using config
-        for symbols_config in engine_config.get_all_configs():
+        for symbols_config in engine_config.get_symbols_configs():
             for symbol in symbols_config.symbols:
                 config = symbols_config.symbol_config
                 mw_item = dict()
@@ -112,7 +112,7 @@ class MarketWatchManager:
         start_index = math.floor(
             source_start_index/target_interval.value)*target_interval.value
         updated_only_df: pd.DataFrame = source_df.loc[start_index:]
-        generated_df: pd.DataFrame = updated_only_df.groupby(np.floor(
+        generated_df: pd.DataFrame = updated_only_df.groupby(by=np.floor(
             updated_only_df.index/target_interval.value)*target_interval.value).agg(
             open=('open', 'first'),
             high=('high', 'max'),
