@@ -7,10 +7,10 @@ from models.event_queue import EventQueue
 from models.event import CandleEvent
 from engiene.indicator_manager import IndicatorManager
 from engiene.strategy_manager import StrategyManager
-from exchange.quote_service import QuoteService
 from engiene.market_watch_manager import MarketWatchManager
 from models.enums import INTERVAL_TYPE
 from config.engine_config import EngineConfig, SymbolConfig
+from services.quote_service import QuoteService
 from strategy.strategy import Strategy
 import utils.market_watch_utils as market_watch_utils
 

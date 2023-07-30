@@ -1,5 +1,6 @@
 from db.db import GSheetDb, InMemoryDb
-from exchange.exchange import CoinBaseExchange, MockExchange
+from exchange.coinbase_exchange import CoinBaseExchange
+from exchange.mock_exchange import MockExchange
 from indicators.sma import SMA
 from models.enums import DB_TYPE, EXCAHNGE_TYPE, INTERVAL_TYPE
 from strategy.swing_trading_strategy import SwingTradingStrategy
