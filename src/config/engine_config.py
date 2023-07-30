@@ -3,6 +3,7 @@ from strategy.strategy import Strategy
 from models.enums import *
 from indicators.indicator import Indicator
 
+
 class SymbolConfig:
     def __init__(self, symbol_config, exchange_config) -> None:
         self.symbol_config = symbol_config

@@ -20,6 +20,7 @@ class EXCAHNGE_TYPE(Enum):
     COINBASE_EXCHANGE = 2
     BINANCE_EXCAHNGE = 3
     ZERODHA_EXCHANGE = 4
+    CSV_EXCHANGE = 5
 
     def __repr__(self) -> str:
         return self.name

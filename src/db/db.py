@@ -14,7 +14,8 @@ class Db:
     
     def get_all(self):
         pass
-
+    
+# todo separate those classes to different files
 class InMemoryDb(Db):
     pass
 
