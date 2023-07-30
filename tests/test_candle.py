@@ -1,5 +1,5 @@
 import pytest
-from src.models.candle import Candle
+from models.candle import Candle
 from collections import namedtuple
 
 CandlePair = namedtuple('CandlePair', 'c1 c2')

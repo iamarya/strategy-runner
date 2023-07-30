@@ -1,7 +1,7 @@
 
 
-from src.models.event import CandleEvent
-from src.strategy.strategy import Strategy
+from models.event import CandleEvent
+from strategy.strategy import Strategy
 
 
 class SwingTradingStrategy(Strategy):

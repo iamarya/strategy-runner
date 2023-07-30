@@ -1,7 +1,7 @@
 
 
-from src.models.event import CandleEvent
-from src.models.enums import INTERVAL_TYPE
+from models.event import CandleEvent
+from models.enums import INTERVAL_TYPE
 
 
 def get_source_interval_for_candle_generation(

@@ -1,6 +1,6 @@
 from queue import Queue
 
-from src.engiene.event_queue import EventQueue
+from models.event_queue import EventQueue
 
 
 def test_queue():

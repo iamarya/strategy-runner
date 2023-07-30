@@ -1,8 +1,8 @@
-from src.models.candle import Candle
-from src.engiene.market_watch_manager import MarketWatchManager
-from src.engiene.engine_config import SymbolConfig
-from src.models.event import CandleEvent
-from src.indicators.indicator import Indicator
+from models.candle import Candle
+from engiene.market_watch_manager import MarketWatchManager
+from engiene.engine_config import SymbolConfig
+from models.event import CandleEvent
+from indicators.indicator import Indicator
 
 
 class IndicatorManager:

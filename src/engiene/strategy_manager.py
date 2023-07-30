@@ -1,9 +1,9 @@
 
 import datetime
-from src.engiene.event_queue import EventQueue
-from src.engiene.engine_config import EngineConfig
-from src.models.event import CandleEvent
-from src.strategy.strategy import Strategy
+from models.event_queue import EventQueue
+from engiene.engine_config import EngineConfig
+from models.event import CandleEvent
+from strategy.strategy import Strategy
 '''
 strategy_config = {
 	# strategy1 to symbol 1? to 1 per therad

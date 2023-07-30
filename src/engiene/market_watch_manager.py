@@ -1,11 +1,11 @@
 import math
-from src.models.candle import Candle
-from src.models.enums import INTERVAL_TYPE
-from src.engiene.engine_config import EngineConfig, SymbolConfig
+from models.candle import Candle
+from models.enums import INTERVAL_TYPE
+from engiene.engine_config import EngineConfig, SymbolConfig
 import pandas as pd
 import numpy as np
 
-from src.models.event import CandleEvent
+from models.event import CandleEvent
 
 default_columns = ['time', 'open', 'high', 'low', 'close', 'volume']
 
@@ -32,7 +32,7 @@ market_watch = {
 class MarketWatchManager:
 
     def __init__(self, engine_config: EngineConfig) -> None:
-        # todo make it another class, market_watch_service
+        # todo make it another class, market_watch_service and a MarketWatch class
         self.market_watch = dict()
         # setup initial ma using config
         for symbols_config in engine_config.get_all_configs():

@@ -1,5 +1,5 @@
 
-from src.models.enums import INTERVAL_TYPE
+from models.enums import INTERVAL_TYPE
 
 
 class CandleEvent:

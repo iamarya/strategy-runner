@@ -1,6 +1,6 @@
 
 
-from src.models.event import CandleEvent
+from models.event import CandleEvent
 
 
 class Strategy:

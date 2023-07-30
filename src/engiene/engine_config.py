@@ -1,7 +1,7 @@
-from src.strategy.swing_trading_strategy import SwingTradingStrategy
-from src.models.enums import *
-from src.indicators.sma import SMA
-from src.indicators.indicator import Indicator
+from strategy.swing_trading_strategy import SwingTradingStrategy
+from models.enums import *
+from indicators.sma import SMA
+from indicators.indicator import Indicator
 
 sample_config = {
     "backtest": False,  # flag changes behaviour of engine and strategies will bound use paper trading with inmeroy db

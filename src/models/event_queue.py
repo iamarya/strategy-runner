@@ -1,6 +1,6 @@
 from queue import Queue
 
-from src.models.event import CandleEvent
+from models.event import CandleEvent
 
 class EventQueue:
     def __init__(self) -> None:

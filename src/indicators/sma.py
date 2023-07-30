@@ -1,6 +1,6 @@
 import pandas as pd
 
-from src.indicators.indicator import Indicator
+from indicators.indicator import Indicator
 
 
 class SMA(Indicator):
