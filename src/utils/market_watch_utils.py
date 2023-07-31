@@ -1,5 +1,4 @@
 
-
 from models.event import CandleEvent
 from models.enums import INTERVAL_TYPE
 

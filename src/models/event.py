@@ -1,9 +1,7 @@
-
 from models.enums import INTERVAL_TYPE
 
 
 class CandleEvent:
-
     '''
     Ex:
     {
@@ -24,7 +22,7 @@ class CandleEvent:
 
     def add_to_inserted(self, inserted: int):
         self.inserted.append(inserted)
-    
+
     def add_to_inserted_as_list(self, inserted_list: list[int]):
         self.inserted.extend(inserted_list)
 

@@ -1,9 +1,6 @@
-
-import datetime
 from models.event_queue import EventQueue
-from config.engine_config import EngineConfig
-from models.event import CandleEvent
 from strategy.strategy import Strategy
+
 '''
 strategy_config = {
 	# strategy1 to symbol 1? to 1 per therad
@@ -64,5 +61,6 @@ class StrategyManager:
         return strategies_torun
 
         # this logic wil run paralelly for each filter strategy periodically
+
     def run(self, strategy: Strategy):
         strategy.execute()

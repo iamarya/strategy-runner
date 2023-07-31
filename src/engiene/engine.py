@@ -1,18 +1,18 @@
 import os
 import threading
-import schedule
 import time
 from datetime import datetime
-from models.event_queue import EventQueue
-from models.event import CandleEvent
-from engiene.indicator_manager import IndicatorManager
-from engiene.strategy_manager import StrategyManager
-from engiene.market_watch_manager import MarketWatchManager
-from models.enums import INTERVAL_TYPE
-from config.engine_config import EngineConfig, SymbolConfig
-from services.quote_service import QuoteService
-from strategy.strategy import Strategy
+
+import schedule
+
 import utils.market_watch_utils as market_watch_utils
+from config.engine_config import EngineConfig, SymbolConfig
+from engiene.indicator_manager import IndicatorManager
+from engiene.market_watch_manager import MarketWatchManager
+from engiene.strategy_manager import StrategyManager
+from models.event import CandleEvent
+from models.event_queue import EventQueue
+from services.quote_service import QuoteService
 
 
 class Engine(threading.Thread):

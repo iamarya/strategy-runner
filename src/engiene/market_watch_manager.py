@@ -171,7 +171,10 @@ class MarketWatchManager:
     '''
 
     def synthesized_all_candle_events_all_time(self) -> list[dict[str, list[CandleEvent]]]:
-        # get all intervals for history candles
+        # get all symbols
+        # get all intervals for history candles and find the minimum
+
+        # for each symbol
 
         # getsmallest interval
         return []  # list of list of candle_event

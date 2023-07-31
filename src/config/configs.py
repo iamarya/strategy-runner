@@ -5,7 +5,6 @@ from indicators.sma import SMA
 from models.enums import DB_TYPE, EXCAHNGE_TYPE, INTERVAL_TYPE
 from strategy.swing_trading_strategy import SwingTradingStrategy
 
-
 sample_config = {
     # flag changes behaviour of engine and strategies will bound use paper trading with inmeroy db
     "backtest": False,
@@ -13,7 +12,7 @@ sample_config = {
         {
             # add multiple symbools here for same config
             "symbols": ["BTC"],
-            "symbol_config":  {
+            "symbol_config": {
                 "current_intervals": [INTERVAL_TYPE.S5],
                 "current_intervals_generated": [INTERVAL_TYPE.HR1, INTERVAL_TYPE.D1],
                 "current_candles_no": 2,

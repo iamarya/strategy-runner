@@ -5,6 +5,7 @@ from models.enums import *
 
 symbol_to_trade = 'BTC'
 
+
 # strategies are stateful in nature, dont share between threads
 class SwingTradingStrategy(Strategy):
 
