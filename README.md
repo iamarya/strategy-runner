@@ -20,6 +20,19 @@
 - evaluation of strategy: not just total return also add risk, volatility, drawdown => sharp ratio
 - logging framework
 - unit test cases 
+- Priority wise:
+  - backtest
+    - kite/ coinbase for market data intigration
+    - backtest (candle event synthsize)
+    - backtest (save as csv)
+    - simple strategy
+    - db (inmemory)
+    - simple report from db
+  - ml resarch
+  - paper trading
+    - mock order service
+  - gsheet integration (db)
+
   
 
 ## License
