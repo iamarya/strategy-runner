@@ -14,7 +14,7 @@ def hello():
 # main driver function
 if __name__ == '__main__':
     # choose which config to use
-    engine_config = EngineConfig(configs.backtest_config)
+    engine_config = EngineConfig(configs.sample_config)
     engine = Engine(engine_config)
     engine.start()
     if not engine_config.is_backtest():

@@ -11,7 +11,7 @@ strategy_config = {
 
 }
 
-all_candle_events  = 
+candle_event_value  = 
 {'BTC':
 	[{
 		symbol: "BTC",
