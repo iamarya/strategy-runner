@@ -51,6 +51,35 @@ sample_config = {
     }
 }
 
+backtest_config = {
+    # flag changes behaviour of engine and strategies will bound use paper trading with inmeroy db
+    "backtest": True,
+    "save_history_csv": True,
+    "symbol_configs": [
+        {
+            # add multiple symbools here for same config
+            "symbols": ["BTCUSDT"],
+            "symbol_config": {
+                "current_intervals": [],
+                "current_intervals_generated": [],
+                "current_candles_no": 0,
+                "history_intervals": [INTERVAL_TYPE.M15, INTERVAL_TYPE.M5],
+                "history_intervals_generated": [],
+                "history_candles_no": 1000,
+                "indicators": [SMA(5)],
+                "exchange_type": EXCAHNGE_TYPE.MOCK_EXCAHNGE
+            }
+        }
+    ],
+    "strategy_configs": [],
+    "db_configs": {
+    },
+    "exchange_configs": {
+        EXCAHNGE_TYPE.MOCK_EXCAHNGE: MockExchange(),
+        EXCAHNGE_TYPE.BINANCE_EXCAHNGE: BinanceExchange()
+    }
+}
+
 # backtest means some mock exchange/ real exchange(quote) will be used and strategies will be use inmemory db
 # and mock order service
 # papaer trade means strategy will use db as inmemory/gsheet and mock order serice

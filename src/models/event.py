@@ -11,7 +11,7 @@ class CandleEvent(Event):
         interval: M5,
         updated: [1234, 1235], #timestamps
         inserted: [1236],
-        generated: True
+        generated: True # todo remove this
     }
     '''
 
@@ -21,7 +21,7 @@ class CandleEvent(Event):
         self.interval = interval
         self.updated = []
         self.inserted = []
-        self.generated = generated
+        self.generated = generated # it is not required
 
     def add_to_inserted(self, inserted: int):
         self.inserted.append(inserted)

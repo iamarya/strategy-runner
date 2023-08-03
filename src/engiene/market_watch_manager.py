@@ -1,4 +1,5 @@
 import math
+import os
 from models.candle import Candle
 from models.enums import INTERVAL_TYPE
 from config.engine_config import EngineConfig, SymbolConfig
@@ -165,19 +166,57 @@ class MarketWatchManager:
 
     '''
     Used for back testing to generate all candle events for history candles
-    list[CandleEvent] is for a perticular time for all intervals for single symbol
-    list[list[CandleEvent]] is for a perticular time for all intervals for all symbol
-    list[list[list[CandleEvent]]] is for a all time for all intervals for all symbol 
+    list[CandleEvent] is for a perticular time, perticular symbol for all intervals
+    dict[str, list[CandleEvent]] is for a perticular time of above
+    list[dict[str, list[CandleEvent]]] is for all time of above
     '''
 
     def synthesized_all_candle_events_all_time(self) -> list[dict[str, list[CandleEvent]]]:
-        # get all symbols
-        # get all intervals for history candles and find the minimum
+        all_times = pd.Series()
+        # get all intervals for history candles
+        for item in self.market_watch.values():
+            symbol = item['symbol']
+            for key in item.keys():
+                if type(key) == INTERVAL_TYPE:
+                    df:pd.DataFrame = item[key]
+                    all_times = pd.concat([all_times, df.index.to_series()])
+        all_times = all_times.drop_duplicates()
+        all_times = all_times.sort_index().to_list()
 
-        # for each symbol
-
-        # getsmallest interval
-        return []  # list of list of candle_event
+        all_candle_events_all_time:list[dict[str, list[CandleEvent]]] = []
+        
+        for time in all_times:
+            symbol_dict = {}
+            for item in self.market_watch.values():
+                # for each symbol
+                symbol = item['symbol']
+                candles_for_symbol = []
+                for key in item.keys():
+                    if type(key) == INTERVAL_TYPE:
+                        df:pd.DataFrame = item[key]
+                        try:
+                            _ = df.loc[time]
+                            ce = CandleEvent(symbol, key, False)
+                            ce.add_to_inserted(time)
+                            candles_for_symbol.append(ce)
+                        except KeyError:
+                            pass
+                symbol_dict[symbol] = candles_for_symbol
+            all_candle_events_all_time.append(symbol_dict)        
+        # print(all_candle_events_all_time)
+        return all_candle_events_all_time
+    
+    def save_candles_csv(self):
+        # todo save into a tmp folder
+        # csv per symbol, per interval 
+        if not os.path.exists('../tmp'):
+            os.makedirs('../tmp')
+        for item in self.market_watch.values():
+            symbol = item['symbol']
+            for key in item.keys():
+                if type(key) == INTERVAL_TYPE:
+                    filename = f'../tmp/{symbol}_{key.name}.csv'
+                    item[key].to_csv(filename, sep=',', encoding='utf-8', header='true')
 
     def get_market_watch(self, symbol: str) -> dict:
         return self.market_watch[symbol]

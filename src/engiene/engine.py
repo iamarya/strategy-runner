@@ -31,9 +31,9 @@ class Engine(threading.Thread):
     def run(self):
         # get history candles and indicators
         self.get_history_all()
-        threading.Thread(target=self.run_strategies, args=(),
-                         daemon=True, name='run_strategies').start()
         if not self.engine_config.is_backtest():
+            threading.Thread(target=self.run_strategies, args=(),
+                             daemon=True, name='run_strategies').start()
             # configure scheduler
             # schedule.every(5).minutes.at(":05").do(self.run_market_watch_scheduler)
             schedule.every(5).seconds.do(self.run_market_watch_scheduler)
@@ -44,16 +44,23 @@ class Engine(threading.Thread):
         else:
             # backtesting only
             print("doing backtesting only")
+            # save candles
+            if self.engine_config.is_save_history_csv():
+                self.market_watch_manager.save_candles_csv()
+            # synthesizing candle events
             synthesized_all_candle_events_all_time = self.market_watch_manager.synthesized_all_candle_events_all_time()
+            # execute strategies
             for all_candle_events_at_time in synthesized_all_candle_events_all_time:
                 self.event_queue.push(all_candle_events_at_time)
+                strategies = self.strategy_manager.notify()
+                for strategy in strategies:
+                    self.strategy_manager.run(strategy)
 
     # todo move this to stratgey_runner
     def run_strategies(self):
         while True:
             current_time = datetime.now()
             strategies = self.strategy_manager.notify()
-
             calls = []
             for strategy in strategies:
                 calls.append(threading.Thread(
@@ -149,11 +156,13 @@ class Engine(threading.Thread):
         candles = self.quote_service.get_candles(config.exchange(),
                                                  symbol, interval, current_time, candles_no)
         if not is_history:
-            candle_event = self.market_watch_manager.add_update_candles(symbol, interval,candles)
+            candle_event = self.market_watch_manager.add_update_candles(
+                symbol, interval, candles)
         else:
-            # self.market_watch_manager.add_update_candles will work here aswell 
+            # self.market_watch_manager.add_update_candles will work here aswell
             # but add_candles is more efficient by just adding all at a time
-            candle_event = self.market_watch_manager.add_candles(symbol, interval,candles)
+            candle_event = self.market_watch_manager.add_candles(
+                symbol, interval, candles)
         candle_events.append(candle_event)
         self.create_update_indicators(config, candle_event)
 
