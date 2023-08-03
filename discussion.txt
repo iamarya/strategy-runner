@@ -9,3 +9,23 @@ which strategy needs what symbol or send each symbol then strategy decides if ne
 
 
 
+## ToDo
+- Safeguards, ex: engine config validation, safe exit, shutdown hook, error handling (mainly in strategiy, also for market data)
+- Two type of strategy, 
+  - one depends on candle event, which can be backtested
+  - other type depends cant be backtested depends on timely triggered.
+- evaluation of strategy: not just total return also add risk, volatility, drawdown => sharp ratio
+- logging framework
+- unit test cases 
+- Priority wise:
+  - backtest
+    - kite/ coinbase for market data intigration
+    - backtest (candle event synthsize)
+    - backtest (save as csv)
+    - simple strategy
+    - db (inmemory)
+    - simple report from db
+  - ml resarch
+  - paper trading
+    - mock order service
+  - gsheet integration (db)

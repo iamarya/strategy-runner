@@ -46,6 +46,9 @@ class EngineConfig:
 
     def is_backtest(self) -> bool:
         return self.engine_config["backtest"]
+    
+    def is_save_history_csv(self) -> bool:
+        return self.engine_config['save_history_csv']
 
     # def get_all_symbols(self) -> list[str]:
     #     return []

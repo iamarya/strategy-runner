@@ -1,6 +1,6 @@
 class Candle:
 
-    def __init__(self, t: int, o: float, h: float, l: float, c: float, v: int) -> None:
+    def __init__(self, t: int, o: float, h: float, l: float, c: float, v: float) -> None:
         self.t = t
         self.h = h
         self.l = l

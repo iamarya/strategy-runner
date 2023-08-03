@@ -1,5 +1,6 @@
 from db.db import GSheetDb, InMemoryDb
 from exchange.coinbase_exchange import CoinBaseExchange
+from exchange.binance_exchange import BinanceExchange
 from exchange.mock_exchange import MockExchange
 from indicators.sma import SMA
 from models.enums import DB_TYPE, EXCAHNGE_TYPE, INTERVAL_TYPE
@@ -8,6 +9,7 @@ from strategy.swing_trading_strategy import SwingTradingStrategy
 sample_config = {
     # flag changes behaviour of engine and strategies will bound use paper trading with inmeroy db
     "backtest": False,
+    "save_history_csv": False,
     "symbol_configs": [
         {
             # add multiple symbools here for same config
@@ -44,7 +46,8 @@ sample_config = {
     },
     "exchange_configs": {
         EXCAHNGE_TYPE.MOCK_EXCAHNGE: MockExchange(),
-        EXCAHNGE_TYPE.COINBASE_EXCHANGE: CoinBaseExchange()
+        EXCAHNGE_TYPE.COINBASE_EXCHANGE: CoinBaseExchange(),
+        EXCAHNGE_TYPE.BINANCE_EXCAHNGE: BinanceExchange()
     }
 }
 
