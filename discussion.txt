@@ -19,9 +19,9 @@ which strategy needs what symbol or send each symbol then strategy decides if ne
 - unit test cases 
 - Priority wise:
   - backtest
-    - kite/ coinbase for market data intigration
-    - backtest (candle event synthsize)
-    - backtest (save as csv)
+    - kite/ coinbase for market data intigration [done]
+    - backtest (candle event synthsize) [done]
+    - backtest (save as csv) [done]
     - simple strategy
     - db (inmemory)
     - simple report from db
@@ -29,3 +29,4 @@ which strategy needs what symbol or send each symbol then strategy decides if ne
   - paper trading
     - mock order service
   - gsheet integration (db)
+  - design for web socket
