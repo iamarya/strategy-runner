@@ -4,13 +4,14 @@ import time
 from datetime import datetime
 
 import schedule
+from models.event import CandleEvent
 
 import utils.market_watch_utils as market_watch_utils
 from config.engine_config import EngineConfig, SymbolConfig
 from engiene.indicator_manager import IndicatorManager
 from engiene.market_watch_manager import MarketWatchManager
 from engiene.strategy_manager import StrategyManager
-from models.event import CandleEvent
+from models.candle_update_detail import CandleUpdateDetail
 from models.event_queue import EventQueue
 from services.quote_service import QuoteService
 
@@ -26,7 +27,8 @@ class Engine(threading.Thread):
         self.event_queue = EventQueue()
         self.strategy_manager = StrategyManager(
             self.engine_config.get_strategies(), self.event_queue)
-        self.all_candle_events: dict[str, list[CandleEvent]] = {}
+        self.all_candle_update_details: dict[str,
+                                             list[CandleUpdateDetail]] = {}
 
     def run(self):
         # get history candles and indicators
@@ -38,7 +40,7 @@ class Engine(threading.Thread):
             # schedule.every(5).minutes.at(":05").do(self.run_market_watch_scheduler)
             schedule.every(5).seconds.do(self.run_market_watch_scheduler)
             while True:
-                self.all_candle_events = {}
+                self.all_candle_update_details = {}
                 schedule.run_pending()
                 time.sleep(1)
         else:
@@ -51,9 +53,9 @@ class Engine(threading.Thread):
             # execute strategies
             if self.strategy_manager.strategies:
                 # synthesizing candle events
-                synthesized_all_candle_events_all_time = self.market_watch_manager.synthesized_all_candle_events_all_time()
-                for all_candle_events_at_time in synthesized_all_candle_events_all_time:
-                    self.event_queue.push(all_candle_events_at_time)
+                synthesized_all_candle_update_details_all_time = self.market_watch_manager.synthesized_all_candle_update_details_all_time()
+                for all_candle_update_details_at_time in synthesized_all_candle_update_details_all_time:
+                    self.event_queue.push(CandleEvent(all_candle_update_details_at_time))
                     strategies = self.strategy_manager.notify()
                     for strategy in strategies:
                         self.strategy_manager.run(strategy)
@@ -97,18 +99,18 @@ class Engine(threading.Thread):
         try:
             # get history candles and indicators per symbol and add to state
             print(f"--- get_history_symbol:{symbol} ---")
-            candle_events = self.populate_market_watch(
+            candle_update_details = self.populate_market_watch(
                 symbol, config, current_time, True)
-            self.all_candle_events[symbol] = candle_events
+            self.all_candle_update_details[symbol] = candle_update_details
         except:
             os._exit(0)
 
     def get_current_symbol(self, symbol: str, config: SymbolConfig, current_time):
         print(f"--- get_current_symbol:{symbol} ---")
         try:
-            candle_events = self.populate_market_watch(
+            candle_update_details = self.populate_market_watch(
                 symbol, config, current_time, False)
-            self.all_candle_events[symbol] = candle_events
+            self.all_candle_update_details[symbol] = candle_update_details
         except:
             os._exit(0)
 
@@ -122,62 +124,62 @@ class Engine(threading.Thread):
             intervals_generated = sorted(config.current_intervals_generated())
             candles_no = config.current_candles_no()
 
-        candle_events: list[CandleEvent] = []
+        candle_update_details: list[CandleUpdateDetail] = []
         all_intervals = sorted(
             config.current_intervals() + config.history_intervals())
 
         # popiulate candles from excahnge
         for interval in intervals:
             self.populate_fetch_interval(
-                symbol, config, current_time, candles_no, candle_events, interval, is_history)
+                symbol, config, current_time, candles_no, candle_update_details, interval, is_history)
         # generate candles from existig
         for interval in intervals_generated:
             self.populate_generated_interval(
-                symbol, config, candle_events, all_intervals, interval)
+                symbol, config, candle_update_details, all_intervals, interval)
 
         # printing things
         self.market_watch_manager.print_market_watch(symbol)
-        # candle_events: list[CandleEvent] is for a perticular time for all intervals for a single symbol
+        # candle_update_details: list[CandleUpdateDetail] is for a perticular time for all intervals for a single symbol
         if not is_history:
-            print("candle_events:", candle_events)
-        return candle_events
+            print("candle_update_details:", candle_update_details)
+        return candle_update_details
 
-    def populate_generated_interval(self, symbol, config, candle_events, all_intervals, interval):
+    def populate_generated_interval(self, symbol, config, candle_update_details, all_intervals, interval):
         # for 1d generate from 1hr candles,so go from lower to higher, 5m-> 1hr->1d,
         # in this case vwill needed just 12 history candles for 1hr
         source_interval = market_watch_utils.get_source_interval_for_candle_generation(
             all_intervals, interval)
-        source_candle_event = market_watch_utils.get_candle_event_for_interval(
-            candle_events, source_interval)
-        candle_event = self.market_watch_manager.generate_candles(
-            symbol, source_interval, source_candle_event, interval)
-        candle_events.append(candle_event)
-        self.create_update_indicators(config, candle_event)
+        source_candle_update_detail = market_watch_utils.get_candle_update_detail_for_interval(
+            candle_update_details, source_interval)
+        candle_update_detail = self.market_watch_manager.generate_candles(
+            symbol, source_interval, source_candle_update_detail, interval)
+        candle_update_details.append(candle_update_detail)
+        self.create_update_indicators(config, candle_update_detail)
 
-    def populate_fetch_interval(self, symbol, config, current_time, candles_no, candle_events, interval, is_history):
+    def populate_fetch_interval(self, symbol, config, current_time, candles_no, candle_update_details, interval, is_history):
         candles = self.quote_service.get_candles(config.exchange(),
                                                  symbol, interval, current_time, candles_no)
         if not is_history:
-            candle_event = self.market_watch_manager.add_update_candles(
+            candle_update_detail = self.market_watch_manager.add_update_candles(
                 symbol, interval, candles)
         else:
             # self.market_watch_manager.add_update_candles will work here aswell
             # but add_candles is more efficient by just adding all at a time
-            candle_event = self.market_watch_manager.add_candles(
+            candle_update_detail = self.market_watch_manager.add_candles(
                 symbol, interval, candles)
-        candle_events.append(candle_event)
-        self.create_update_indicators(config, candle_event)
+        candle_update_details.append(candle_update_detail)
+        self.create_update_indicators(config, candle_update_detail)
 
-    def create_update_indicators(self, config, candle_event):
+    def create_update_indicators(self, config, candle_update_detail):
         for indicator in config.indicators():
             self.indicator_manager.create_upadte_indicators(
-                candle_event, indicator)
+                candle_update_detail, indicator)
 
     def run_market_watch_scheduler(self):
         print(f"\n\n === Schedluer Triggered @ {datetime.now()} ===\n")
         self.get_current_all()
-        if self.all_candle_events:
-            self.event_queue.push(self.all_candle_events)
+        if self.all_candle_update_details:
+            self.event_queue.push(CandleEvent(self.all_candle_update_details))
 
     def get_current_all(self):
         calls = []

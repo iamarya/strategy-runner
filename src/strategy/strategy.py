@@ -2,7 +2,8 @@
 
 from db.db import Db
 from exchange.exchange import Exchange
-from models.event import CandleEvent
+from models.event import Event
+from models.candle_update_detail import CandleUpdateDetail
 
 
 class Strategy:
@@ -14,7 +15,7 @@ class Strategy:
         # this will run parellaly
         pass
 
-    def filter(self, all_candle_events: dict[str, list[CandleEvent]]) -> bool:
+    def filter(self, event: Event) -> bool:
         # no api will be called here as it will run syncronusly
         # no logic which have high processing time will be called here
         return False

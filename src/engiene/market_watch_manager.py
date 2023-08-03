@@ -6,7 +6,7 @@ from config.engine_config import EngineConfig, SymbolConfig
 import pandas as pd
 import numpy as np
 
-from models.event import CandleEvent
+from models.candle_update_detail import CandleUpdateDetail
 
 default_columns = ['time', 'open', 'high', 'low', 'close', 'volume']
 
@@ -67,20 +67,20 @@ class MarketWatchManager:
     def get_length(self, symbol: str):
         return self.market_watch[symbol].length
 
-    def add_update_candles(self, symbol: str, interval: INTERVAL_TYPE, candles: list[Candle]) -> CandleEvent:
+    def add_update_candles(self, symbol: str, interval: INTERVAL_TYPE, candles: list[Candle]) -> CandleUpdateDetail:
         df = self.market_watch[symbol][interval]
-        candle_event = CandleEvent(symbol, interval, False)
+        candle_update_detail = CandleUpdateDetail(symbol, interval, False)
         for candle in candles:
             # last_index = self.market_watch[symbol]["length"]
             wo_time = [candle.o, candle.h, candle.l, candle.c, candle.v]
             if candle.t in df.index:
                 if df.loc[candle.t, default_columns[1:]].values.flatten().tolist() != wo_time:
                     # updated
-                    candle_event.add_to_updated(candle.t)
+                    candle_update_detail.add_to_updated(candle.t)
                     df.loc[candle.t, default_columns[1:]] = wo_time
             else:
                 # inserted
-                candle_event.add_to_inserted(candle.t)
+                candle_update_detail.add_to_inserted(candle.t)
                 df.loc[candle.t, default_columns[1:]] = wo_time
                 # self.market_watch[symbol]["length"] = last_index+1
         last_updated_time = self.market_watch[symbol]["last_updated_time"]
@@ -88,10 +88,10 @@ class MarketWatchManager:
             self.market_watch[symbol]["last_updated_time"] = candles[-1].t
         self.market_watch[symbol]["ltp"] = candles[-1].c
         # print(self.market_watch[symbol])
-        # print("candle_event", candle_event)
-        return candle_event
+        # print("candle_update_detail", candle_update_detail)
+        return candle_update_detail
 
-    def add_candles(self, symbol: str, interval: INTERVAL_TYPE, candles: list[Candle]) -> CandleEvent:
+    def add_candles(self, symbol: str, interval: INTERVAL_TYPE, candles: list[Candle]) -> CandleUpdateDetail:
         df: pd.DataFrame = self.market_watch[symbol][interval]
         # create a new index series from candles
         add_df = pd.DataFrame([[c.t, c.o, c.h, c.l, c.c, c.v] for c in candles], columns=default_columns)
@@ -99,14 +99,14 @@ class MarketWatchManager:
         add_df.index = add_df.index.astype('int64')
 
         df = pd.concat([df, add_df])
-        candle_event = CandleEvent(symbol, interval, False)
-        candle_event.add_to_inserted_as_list(df.index.to_list())
+        candle_update_detail = CandleUpdateDetail(symbol, interval, False)
+        candle_update_detail.add_to_inserted_as_list(df.index.to_list())
         self.market_watch[symbol][interval] = df
         last_updated_time = self.market_watch[symbol]["last_updated_time"]
         if last_updated_time is None or last_updated_time < candles[-1].t:
             self.market_watch[symbol]["last_updated_time"] = candles[-1].t
         self.market_watch[symbol]["ltp"] = candles[-1].c
-        return candle_event
+        return candle_update_detail
 
     '''
     DOUBT : candle timestamp should be future or past/ completed candle?????
@@ -114,12 +114,12 @@ class MarketWatchManager:
     '''
 
     def generate_candles(self, symbol: str, source_interval: INTERVAL_TYPE,
-                         source_candle_event: CandleEvent, target_interval: INTERVAL_TYPE):
+                         source_candle_update_detail: CandleUpdateDetail, target_interval: INTERVAL_TYPE):
         # print(
         #     f"generating candle for {target_interval.name} from {source_interval.name}")
-        # print("source_candle_event is", source_candle_event)
+        # print("source_candle_update_detail is", source_candle_update_detail)
         source_df = self.market_watch[symbol][source_interval]
-        source_start_index, _ = source_candle_event.get_start_end_time()
+        source_start_index, _ = source_candle_update_detail.get_start_end_time()
         # todo will update formula one time offset is added to exchange
         start_index = math.floor(
             source_start_index / target_interval.value) * target_interval.value
@@ -134,7 +134,7 @@ class MarketWatchManager:
         )
         generated_df.index = generated_df.index.astype('int64')
 
-        candle_event = CandleEvent(symbol, target_interval, True)
+        candle_update_detail = CandleUpdateDetail(symbol, target_interval, True)
         df = self.market_watch[symbol][target_interval]
         for index, row in generated_df.iterrows():
             time: int = index  # type: ignore
@@ -155,23 +155,23 @@ class MarketWatchManager:
                     is_updated = True
                 # updated
                 if is_updated:
-                    candle_event.add_to_updated(time)
+                    candle_update_detail.add_to_updated(time)
             else:
                 # inserted
-                candle_event.add_to_inserted(time)
+                candle_update_detail.add_to_inserted(time)
                 df.loc[time, default_columns[1:]] = [
                     row.open, row.high, row.low, row.close, row.volume]
 
-        return candle_event
+        return candle_update_detail
 
     '''
-    Used for back testing to generate all candle events for history candles
-    list[CandleEvent] is for a perticular time, perticular symbol for all intervals
-    dict[str, list[CandleEvent]] is for a perticular time of above
-    list[dict[str, list[CandleEvent]]] is for all time of above
+    Used for back testing to generate all candle update details for history candles
+    list[CandleUpdateDetail] is for a perticular time, perticular symbol for all intervals
+    dict[str, list[CandleUpdateDetail]] is for a perticular time of above
+    list[dict[str, list[CandleUpdateDetail]]] is for all time of above
     '''
 
-    def synthesized_all_candle_events_all_time(self) -> list[dict[str, list[CandleEvent]]]:
+    def synthesized_all_candle_update_details_all_time(self) -> list[dict[str, list[CandleUpdateDetail]]]:
         all_times = pd.Series()
         # get all intervals for history candles
         for item in self.market_watch.values():
@@ -183,7 +183,7 @@ class MarketWatchManager:
         all_times = all_times.drop_duplicates()
         all_times = all_times.sort_index().to_list()
 
-        all_candle_events_all_time:list[dict[str, list[CandleEvent]]] = []
+        all_candle_update_details_all_time:list[dict[str, list[CandleUpdateDetail]]] = []
         
         for time in all_times:
             symbol_dict = {}
@@ -196,15 +196,15 @@ class MarketWatchManager:
                         df:pd.DataFrame = item[key]
                         try:
                             _ = df.loc[time]
-                            ce = CandleEvent(symbol, key, False)
+                            ce = CandleUpdateDetail(symbol, key, False)
                             ce.add_to_inserted(time)
                             candles_for_symbol.append(ce)
                         except KeyError:
                             pass
                 symbol_dict[symbol] = candles_for_symbol
-            all_candle_events_all_time.append(symbol_dict)        
-        # print(all_candle_events_all_time)
-        return all_candle_events_all_time
+            all_candle_update_details_all_time.append(symbol_dict)        
+        # print(all_candle_update_details_all_time)
+        return all_candle_update_details_all_time
     
     def save_candles_csv(self):
         # todo save into a tmp folder

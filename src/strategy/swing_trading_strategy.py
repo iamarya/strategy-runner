@@ -1,5 +1,6 @@
 from models.enums import INTERVAL_TYPE
-from models.event import CandleEvent
+from models.candle_update_detail import CandleUpdateDetail
+from models.event import Event
 from strategy.strategy import Strategy
 from models.enums import *
 
@@ -11,7 +12,7 @@ class SwingTradingStrategy(Strategy):
 
     def __init__(self) -> None:
         Strategy.__init__(self)
-        self.candle_event = None
+        self.event_candle = None
         self.action = None
         self.state = STATE.START
 
@@ -20,12 +21,13 @@ class SwingTradingStrategy(Strategy):
         print("SwingTradingStrategy executed")
 
     # no http api sh call inside filter as its not executed in separate thread
-    def filter(self, all_candle_events: dict[str, list[CandleEvent]]) -> bool:
-        if not all_candle_events:
+    def filter(self, event: Event) -> bool:
+        all_candle_update_details = event.value
+        if not all_candle_update_details:
             return False
-        for e in all_candle_events[symbol_to_trade]:
-            if e.interval == INTERVAL_TYPE.S5:
-                self.candle_event = e
+        for event_candle in all_candle_update_details[symbol_to_trade]:
+            if event_candle.interval == INTERVAL_TYPE.S5:
+                self.event_candle = event_candle
                 self.action = ACTION.BUY
                 return True
         return False

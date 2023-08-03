@@ -48,14 +48,16 @@ class StrategyManager:
         self.event_queue = event_queue
 
     def notify(self) -> list[Strategy]:
-        # notify will run every sec # all_candle_eventsmay come empty, that time check if strategy need to run based on time
+        # notify will run every sec # all_candle_events may come empty, that time check if strategy need to run based on time
         # if its not empty then check for symbol and interval which strategies need to called
         strategies_torun: list[Strategy] = []
         print("get notified")
-        all_candle_events = self.event_queue.pull()
-        print('all_candle_events', all_candle_events)
+        event = self.event_queue.pull()
+        if event is None:
+            return []
+        print('event_candles', event.value)
         for strategy in self.strategies:
-            if strategy.filter(all_candle_events):
+            if strategy.filter(event):
                 strategies_torun.append(strategy)
         # return strategy and its event pair
         return strategies_torun

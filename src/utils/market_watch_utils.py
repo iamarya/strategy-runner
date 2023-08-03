@@ -1,5 +1,5 @@
 
-from models.event import CandleEvent
+from models.candle_update_detail import CandleUpdateDetail
 from models.enums import INTERVAL_TYPE
 
 
@@ -16,9 +16,9 @@ def get_source_interval_for_candle_generation(
         "get_source_interval_for_candle_generation", target_interval)
 
 
-def get_candle_event_for_interval(candle_events: list[CandleEvent], source_interval: INTERVAL_TYPE) -> CandleEvent:
-    for ce in candle_events:
-        if ce.interval == source_interval:
-            return ce
-    raise ValueError("get_candle_event_for_interval",
-                     candle_events, source_interval)
+def get_candle_update_detail_for_interval(candle_update_details: list[CandleUpdateDetail], source_interval: INTERVAL_TYPE) -> CandleUpdateDetail:
+    for cud in candle_update_details:
+        if cud.interval == source_interval:
+            return cud
+    raise ValueError("get_candle_update_detail_for_interval",
+                     candle_update_details, source_interval)
