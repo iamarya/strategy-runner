@@ -43,9 +43,18 @@ class BinanceExchange(Exchange):
     
 
     def _get_interval(self, from_interval: INTERVAL_TYPE) -> str:
-        if from_interval == INTERVAL_TYPE.M15:
+        if from_interval == INTERVAL_TYPE.M5:
+            return Client.KLINE_INTERVAL_5MINUTE
+        elif from_interval == INTERVAL_TYPE.M15:
             return Client.KLINE_INTERVAL_15MINUTE
-        return ""
+        elif from_interval == INTERVAL_TYPE.HR1:
+            return Client.KLINE_INTERVAL_1HOUR
+        elif from_interval == INTERVAL_TYPE.D1:
+            return Client.KLINE_INTERVAL_1DAY
+        elif from_interval == INTERVAL_TYPE.W1:
+            return Client.KLINE_INTERVAL_1WEEK
+        
+        raise TypeError("binance does not have INTERVAL_TYPE", from_interval)
 
 
 if __name__ == '__main__':

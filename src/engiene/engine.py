@@ -47,14 +47,16 @@ class Engine(threading.Thread):
             # save candles
             if self.engine_config.is_save_history_csv():
                 self.market_watch_manager.save_candles_csv()
-            # synthesizing candle events
-            synthesized_all_candle_events_all_time = self.market_watch_manager.synthesized_all_candle_events_all_time()
+
             # execute strategies
-            for all_candle_events_at_time in synthesized_all_candle_events_all_time:
-                self.event_queue.push(all_candle_events_at_time)
-                strategies = self.strategy_manager.notify()
-                for strategy in strategies:
-                    self.strategy_manager.run(strategy)
+            if self.strategy_manager.strategies:
+                # synthesizing candle events
+                synthesized_all_candle_events_all_time = self.market_watch_manager.synthesized_all_candle_events_all_time()
+                for all_candle_events_at_time in synthesized_all_candle_events_all_time:
+                    self.event_queue.push(all_candle_events_at_time)
+                    strategies = self.strategy_manager.notify()
+                    for strategy in strategies:
+                        self.strategy_manager.run(strategy)
 
     # todo move this to stratgey_runner
     def run_strategies(self):

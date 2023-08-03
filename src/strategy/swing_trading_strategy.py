@@ -3,7 +3,7 @@ from models.event import CandleEvent
 from strategy.strategy import Strategy
 from models.enums import *
 
-symbol_to_trade = 'BTC'
+symbol_to_trade = 'BTCUSDT'
 
 
 # strategies are stateful in nature, dont share between threads

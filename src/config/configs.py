@@ -13,7 +13,7 @@ sample_config = {
     "symbol_configs": [
         {
             # add multiple symbools here for same config
-            "symbols": ["BTC"],
+            "symbols": ["BTCUSDT"],
             "symbol_config": {
                 "current_intervals": [INTERVAL_TYPE.S5],
                 "current_intervals_generated": [INTERVAL_TYPE.HR1, INTERVAL_TYPE.D1],
@@ -65,14 +65,22 @@ backtest_config = {
                 "current_candles_no": 0,
                 "history_intervals": [INTERVAL_TYPE.M15, INTERVAL_TYPE.M5],
                 "history_intervals_generated": [],
-                "history_candles_no": 1000,
+                "history_candles_no": 10,
                 "indicators": [SMA(5)],
                 "exchange_type": EXCAHNGE_TYPE.MOCK_EXCAHNGE
             }
         }
     ],
-    "strategy_configs": [],
+    "strategy_configs": [
+        {
+            # will be used for backtest and paper trading
+            "strategy": SwingTradingStrategy(),
+            "db_type": DB_TYPE.IN_MEMORY,  # IN_MEMORY or GSHEET
+            "exchange_type": EXCAHNGE_TYPE.MOCK_EXCAHNGE
+        }
+    ],
     "db_configs": {
+        DB_TYPE.IN_MEMORY: InMemoryDb()
     },
     "exchange_configs": {
         EXCAHNGE_TYPE.MOCK_EXCAHNGE: MockExchange(),
