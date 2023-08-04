@@ -3,7 +3,7 @@ from exchange.coinbase_exchange import CoinBaseExchange
 from exchange.binance_exchange import BinanceExchange
 from exchange.mock_exchange import MockExchange
 from indicators.sma import SMA
-from models.enums import DB_TYPE, EXCAHNGE_TYPE, INTERVAL_TYPE
+from models.enums import DB_TYPE, EXCAHNGE_TYPE, INTERVAL_TYPE, MODE
 from strategy.swing_trading_strategy import SwingTradingStrategy
 
 sample_config = {
@@ -47,7 +47,7 @@ sample_config = {
     "exchange_configs": {
         EXCAHNGE_TYPE.MOCK_EXCAHNGE: MockExchange(),
         EXCAHNGE_TYPE.COINBASE_EXCHANGE: CoinBaseExchange(),
-        EXCAHNGE_TYPE.BINANCE_EXCAHNGE: BinanceExchange()
+        EXCAHNGE_TYPE.BINANCE_EXCAHNGE: BinanceExchange(MODE.SANDBOX)
     }
 }
 
@@ -84,7 +84,7 @@ backtest_config = {
     },
     "exchange_configs": {
         EXCAHNGE_TYPE.MOCK_EXCAHNGE: MockExchange(),
-        EXCAHNGE_TYPE.BINANCE_EXCAHNGE: BinanceExchange()
+        EXCAHNGE_TYPE.BINANCE_EXCAHNGE: BinanceExchange(MODE.SANDBOX)
     }
 }
 

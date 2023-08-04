@@ -60,3 +60,7 @@ class ACTION(Enum):
     SELL_CONFIRM = 5
     SELL_CANCEL = 6
     EXIT = 7
+
+class MODE(Enum):
+    LIVE = 1
+    SANDBOX = 2
