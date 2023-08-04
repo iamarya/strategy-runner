@@ -55,7 +55,7 @@ class StrategyManager:
         event = self.event_queue.pull()
         if event is None:
             return []
-        print('event_candles', event.value)
+        print('event_candles', event.type, event.value)
         for strategy in self.strategies:
             if strategy.filter(event):
                 strategies_torun.append(strategy)

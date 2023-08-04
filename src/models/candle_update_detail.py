@@ -13,7 +13,6 @@ class CandleUpdateDetail:
     '''
 
     def __init__(self, symbol: str, interval: INTERVAL_TYPE, generated: bool) -> None:
-        self.type = EVENT_TYPE.CANDLE_EVENT
         self.symbol = symbol
         self.interval = interval
         self.updated = []
