@@ -1,5 +1,5 @@
 from flask import Flask
-from config.engine_config import EngineConfig
+from models.engine_config import EngineConfig
 from engiene.engine import Engine
 import config.configs as configs
 

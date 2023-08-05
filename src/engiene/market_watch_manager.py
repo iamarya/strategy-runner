@@ -2,7 +2,7 @@ import math
 import os
 from models.candle import Candle
 from models.enums import INTERVAL_TYPE
-from config.engine_config import EngineConfig, SymbolConfig
+from models.engine_config import SymbolsConfig
 import pandas as pd
 import numpy as np
 
@@ -13,31 +13,13 @@ default_columns = ['time', 'open', 'high', 'low', 'close', 'volume']
 
 pd.options.mode.copy_on_write = False
 
-'''
-Example:
-market_watch = {
-    "ETH": {
-        "symbol": "ETH",
-        M5: DataFrame,
-        D1: DataFrame,
-        "indicators": [i1, i2], #not added yet, may be not needed
-        "ltp": 123.2,
-        "last_updated_time": 12222987654,
-        "length": 10, # for which df? todo need to update structure or remove this
-        "exchange_timezone": UTC #not added yet
-    }
-}
-
-'''
-
-
+# todo move logics to market_watch_service and a MarketWatch class
 class MarketWatchManager:
 
-    def __init__(self, engine_config: EngineConfig, market_watch_service: MarketWatchService) -> None:
-        # todo make it another class, market_watch_service and a MarketWatch class
+    def __init__(self, symbols_configs: list[SymbolsConfig], market_watch_service: MarketWatchService) -> None:
         self.market_watch_service = market_watch_service
         # setup initial ma using config
-        for symbols_config in engine_config.get_symbols_configs():
+        for symbols_config in symbols_configs:
             for symbol in symbols_config.symbols:
                 config = symbols_config.symbol_config
                 mw_item = dict()
@@ -196,7 +178,6 @@ class MarketWatchManager:
         return all_candle_update_details_all_time
     
     def save_candles_csv(self):
-        # todo save into a tmp folder
         # csv per symbol, per interval 
         if not os.path.exists('../tmp'):
             os.makedirs('../tmp')

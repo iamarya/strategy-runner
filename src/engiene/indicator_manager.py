@@ -1,5 +1,5 @@
 from models.candle import Candle
-from config.engine_config import SymbolConfig
+from models.engine_config import SymbolConfig
 from models.candle_update_detail import CandleUpdateDetail
 from indicators.indicator import Indicator
 from services.market_watch_service import MarketWatchService

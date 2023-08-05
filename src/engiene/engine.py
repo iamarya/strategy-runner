@@ -9,7 +9,7 @@ from models.event import CandleEvent
 from services.market_watch_service import MarketWatchService
 
 import utils.market_watch_utils as market_watch_utils
-from config.engine_config import EngineConfig, SymbolConfig
+from models.engine_config import EngineConfig, SymbolConfig
 from engiene.indicator_manager import IndicatorManager
 from engiene.market_watch_manager import MarketWatchManager
 from engiene.strategy_manager import StrategyManager
@@ -24,14 +24,13 @@ class Engine(threading.Thread):
         threading.Thread.__init__(self, name="engine_thread", daemon=True)
         self.engine_config = engine_config
         self.market_watch_service = MarketWatchService()
-        self.market_watch_manager = MarketWatchManager(self.engine_config, self.market_watch_service)
+        self.market_watch_manager = MarketWatchManager(self.engine_config.get_symbols_configs(), self.market_watch_service)
         self.indicator_manager = IndicatorManager(self.market_watch_service)
         self.quote_service = QuoteService()
         self.event_queue = EventQueue()
         self.strategy_manager = StrategyManager(
             self.engine_config.get_strategies(), self.event_queue, self.market_watch_service)
-        self.all_candle_update_details: dict[str,
-                                             list[CandleUpdateDetail]] = {}
+        self.all_candle_update_details: dict[str, list[CandleUpdateDetail]] = {}
 
     def run(self):
         # get history candles and indicators

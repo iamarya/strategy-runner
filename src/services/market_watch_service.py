@@ -3,6 +3,22 @@ import pandas as pd
 from models.enums import INTERVAL_TYPE
 from models.market_watch import MarketWatch
 
+'''
+Example:
+market_watch = {
+    "ETH": {
+        "symbol": "ETH",
+        M5: DataFrame,
+        D1: DataFrame,
+        "indicators": [i1, i2], #not added yet, may be not needed
+        "ltp": 123.2,
+        "last_updated_time": 12222987654,
+        "length": 10, # for which df? todo need to update structure or remove this
+        "exchange_timezone": UTC #not added yet
+    }
+}
+
+'''
 
 class MarketWatchService:
     def __init__(self) -> None:
