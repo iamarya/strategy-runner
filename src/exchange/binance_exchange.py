@@ -19,13 +19,13 @@ request_weight_limiter = Limiter(request_weight_rate)
 
 class BinanceExchange(Exchange):
 
-    def __init__(self, type: MODE) -> None:
+    def __init__(self, mode: MODE) -> None:
         super().__init__()
-        if type == MODE.LIVE:
+        if mode == MODE.LIVE:
             print("BinanceExchange is LIVE mode")
             self._client = Client(
                 os.getenv('BINANCE_API_KEY'), os.getenv('BINANCE_API_SECRET'))
-        elif type == MODE.SANDBOX:
+        elif mode == MODE.SANDBOX:
             print("BinanceExchange is SANDBOX mode")
             self._client = Client(os.getenv('TEST_BINANCE_API_KEY'), os.getenv(
                 'TEST_BINANCE_API_SECRET'), testnet=True)

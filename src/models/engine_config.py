@@ -4,6 +4,7 @@ from models.enums import *
 from indicators.indicator import Indicator
 
 
+# todo make proper model classes/ low priority
 class SymbolConfig:
     def __init__(self, symbol_config, exchange_config) -> None:
         self.symbol_config = symbol_config
@@ -46,7 +47,7 @@ class EngineConfig:
 
     def is_backtest(self) -> bool:
         return self.engine_config["backtest"]
-    
+
     def is_save_history_csv(self) -> bool:
         return self.engine_config['save_history_csv']
 

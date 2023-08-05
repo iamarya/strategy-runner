@@ -13,6 +13,7 @@ default_columns = ['time', 'open', 'high', 'low', 'close', 'volume']
 
 pd.options.mode.copy_on_write = False
 
+
 # todo move logics to market_watch_service and a MarketWatch class
 class MarketWatchManager:
 
@@ -24,12 +25,12 @@ class MarketWatchManager:
                 config = symbols_config.symbol_config
                 mw_item = dict()
                 # index=range(10) needed if initial size is needed and index to start from 0
-                indicator_coulmns = []
+                indicator_columns = []
                 for indicator in config.indicators():
-                    indicator_coulmns.extend(indicator.get_columns())
-                all_columns = default_columns + indicator_coulmns
-                for interval in config.history_intervals() + config.current_intervals() \
-                                + config.history_intervals_generated() + config.current_intervals_generated():
+                    indicator_columns.extend(indicator.get_columns())
+                all_columns = default_columns + indicator_columns
+                for interval in config.history_intervals() + config.current_intervals() + \
+                        config.history_intervals_generated() + config.current_intervals_generated():
                     df = pd.DataFrame(columns=all_columns)
                     df.set_index("time", inplace=True)
                     mw_item[interval] = df
@@ -79,10 +80,8 @@ class MarketWatchManager:
         self.market_watch_service.market_watch[symbol]["ltp"] = candles[-1].c
         return candle_update_detail
 
-    '''
-    DOUBT : candle timestamp should be future or past/ completed candle?????
-    clear: its always past. basically starting sec of the period. ex today is 24th the starting sec of 24th for day candle.
-    '''
+    '''DOUBT : candle timestamp should be future or past/ completed candle????? clear: its always past. basically 
+    starting sec of the period. ex today is 24th the starting sec of 24th for day candle.'''
 
     def generate_candles(self, symbol: str, source_interval: INTERVAL_TYPE,
                          source_candle_update_detail: CandleUpdateDetail, target_interval: INTERVAL_TYPE):
@@ -137,8 +136,8 @@ class MarketWatchManager:
 
     '''
     Used for back testing to generate all candle update details for history candles
-    list[CandleUpdateDetail] is for a perticular time, perticular symbol for all intervals
-    dict[str, list[CandleUpdateDetail]] is for a perticular time of above
+    list[CandleUpdateDetail] is for a particular time, particular symbol for all intervals
+    dict[str, list[CandleUpdateDetail]] is for a particular time of above
     list[dict[str, list[CandleUpdateDetail]]] is for all time of above
     '''
 
@@ -146,16 +145,15 @@ class MarketWatchManager:
         all_times = pd.Series()
         # get all intervals for history candles
         for item in self.market_watch_service.market_watch.values():
-            symbol = item['symbol']
             for key in item.keys():
                 if type(key) == INTERVAL_TYPE:
-                    df:pd.DataFrame = item[key]
+                    df: pd.DataFrame = item[key]
                     all_times = pd.concat([all_times, df.index.to_series()])
         all_times = all_times.drop_duplicates()
         all_times = all_times.sort_index().to_list()
 
-        all_candle_update_details_all_time:list[dict[str, list[CandleUpdateDetail]]] = []
-        
+        all_candle_update_details_all_time: list[dict[str, list[CandleUpdateDetail]]] = []
+
         for time in all_times:
             symbol_dict = {}
             for item in self.market_watch_service.market_watch.values():
@@ -164,7 +162,7 @@ class MarketWatchManager:
                 candles_for_symbol = []
                 for key in item.keys():
                     if type(key) == INTERVAL_TYPE:
-                        df:pd.DataFrame = item[key]
+                        df: pd.DataFrame = item[key]
                         try:
                             _ = df.loc[time]
                             ce = CandleUpdateDetail(symbol, key, False)
@@ -173,10 +171,10 @@ class MarketWatchManager:
                         except KeyError:
                             pass
                 symbol_dict[symbol] = candles_for_symbol
-            all_candle_update_details_all_time.append(symbol_dict)        
-        # print(all_candle_update_details_all_time)
+            all_candle_update_details_all_time.append(symbol_dict)
+            # print(all_candle_update_details_all_time)
         return all_candle_update_details_all_time
-    
+
     def save_candles_csv(self):
         # csv per symbol, per interval 
         if not os.path.exists('../tmp'):
@@ -193,9 +191,10 @@ class MarketWatchManager:
 
     def print_market_watch(self, symbol: str) -> None:
         symbol_mw = self.get_market_watch(symbol)
-        print(f'\nMarketwatchs for symbol {symbol}')
+        print(f'\nMarket watches for symbol {symbol}')
         for each_int in INTERVAL_TYPE:
             if each_int in symbol_mw:
                 print(
-                    f"\n[symbol ={symbol}; last_updated_time = {symbol_mw['last_updated_time']}; interval={each_int.name}; ltp = {symbol_mw['ltp']} ]")
+                    f"\n[symbol ={symbol}; last_updated_time = {symbol_mw['last_updated_time']};"
+                    f" interval={each_int.name}; ltp = {symbol_mw['ltp']} ]")
                 print(symbol_mw[each_int])
