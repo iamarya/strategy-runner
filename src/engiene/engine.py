@@ -2,9 +2,11 @@ import os
 import threading
 import time
 from datetime import datetime
+import traceback
 
 import schedule
 from models.event import CandleEvent
+from services.market_watch_service import MarketWatchService
 
 import utils.market_watch_utils as market_watch_utils
 from config.engine_config import EngineConfig, SymbolConfig
@@ -21,12 +23,13 @@ class Engine(threading.Thread):
     def __init__(self, engine_config: EngineConfig) -> None:
         threading.Thread.__init__(self, name="engine_thread", daemon=True)
         self.engine_config = engine_config
-        self.market_watch_manager = MarketWatchManager(self.engine_config)
-        self.indicator_manager = IndicatorManager(self.market_watch_manager)
+        self.market_watch_service = MarketWatchService()
+        self.market_watch_manager = MarketWatchManager(self.engine_config, self.market_watch_service)
+        self.indicator_manager = IndicatorManager(self.market_watch_service)
         self.quote_service = QuoteService()
         self.event_queue = EventQueue()
         self.strategy_manager = StrategyManager(
-            self.engine_config.get_strategies(), self.event_queue)
+            self.engine_config.get_strategies(), self.event_queue, self.market_watch_service)
         self.all_candle_update_details: dict[str,
                                              list[CandleUpdateDetail]] = {}
 
@@ -104,7 +107,8 @@ class Engine(threading.Thread):
             candle_update_details = self.populate_market_watch(
                 symbol, config, current_time, True)
             self.all_candle_update_details[symbol] = candle_update_details
-        except:
+        except Exception as e:
+            traceback.print_exc()
             os._exit(0)
 
     def get_current_symbol(self, symbol: str, config: SymbolConfig, current_time):
@@ -113,7 +117,8 @@ class Engine(threading.Thread):
             candle_update_details = self.populate_market_watch(
                 symbol, config, current_time, False)
             self.all_candle_update_details[symbol] = candle_update_details
-        except:
+        except Exception as e:
+            traceback.print_exc()
             os._exit(0)
 
     def populate_market_watch(self, symbol, config, current_time, is_history):

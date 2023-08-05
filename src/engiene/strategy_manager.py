@@ -1,4 +1,5 @@
 from models.event_queue import EventQueue
+from services.market_watch_service import MarketWatchService
 from strategy.strategy import Strategy
 
 '''
@@ -43,8 +44,10 @@ candle_event_value  =
 
 
 class StrategyManager:
-    def __init__(self, strategies: list[Strategy], event_queue: EventQueue) -> None:
+    def __init__(self, strategies: list[Strategy], event_queue: EventQueue, market_watch_service:MarketWatchService) -> None:
         self.strategies: list[Strategy] = strategies  # register stratageies
+        for strategy in self.strategies:
+            strategy.set_market_watch_service(market_watch_service)
         self.event_queue = event_queue
 
     def notify(self) -> list[Strategy]:

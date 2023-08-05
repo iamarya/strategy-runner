@@ -72,10 +72,10 @@ class BinanceExchange(Exchange):
 
 
 if __name__ == '__main__':
-    b = BinanceExchange(MODE.SANDBOX)
+    b = BinanceExchange(MODE.LIVE)
     current_time = datetime.datetime.now()
     interval = INTERVAL_TYPE.M15
-    no_candles = 2
+    no_candles = 3
     from_time = int(current_time.timestamp() -
                     interval.value*(no_candles-1))  # in secs
     from_time = math.floor(

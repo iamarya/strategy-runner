@@ -3,7 +3,7 @@
 from db.db import Db
 from exchange.exchange import Exchange
 from models.event import Event
-from models.candle_update_detail import CandleUpdateDetail
+from services.market_watch_service import MarketWatchService
 
 
 class Strategy:
@@ -25,3 +25,6 @@ class Strategy:
 
     def set_exchange(self, exchange: Exchange):
         self.exchange = exchange
+        
+    def set_market_watch_service(self, market_watch_service: MarketWatchService):
+        self.market_watch_service = market_watch_service

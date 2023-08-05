@@ -60,6 +60,7 @@ class ACTION(Enum):
     SELL_CONFIRM = 5
     SELL_CANCEL = 6
     EXIT = 7
+    # todo an idea can action and state can be combined??
 
 class MODE(Enum):
     LIVE = 1

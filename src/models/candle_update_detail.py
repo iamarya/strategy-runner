@@ -15,8 +15,8 @@ class CandleUpdateDetail:
     def __init__(self, symbol: str, interval: INTERVAL_TYPE, generated: bool) -> None:
         self.symbol = symbol
         self.interval = interval
-        self.updated = []
-        self.inserted = []
+        self.updated:list[int] = []
+        self.inserted:list[int] = []
         self.generated = generated # it is not required
 
     def add_to_inserted(self, inserted: int):

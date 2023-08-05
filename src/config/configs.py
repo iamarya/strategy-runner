@@ -6,7 +6,8 @@ from indicators.sma import SMA
 from models.enums import DB_TYPE, EXCAHNGE_TYPE, INTERVAL_TYPE, MODE
 from strategy.swing_trading_strategy import SwingTradingStrategy
 
-sample_config = {
+def sample_config():
+    return {
     # flag changes behaviour of engine and strategies will bound use paper trading with inmeroy db
     "backtest": False,
     "save_history_csv": False,
@@ -16,12 +17,12 @@ sample_config = {
             "symbols": ["BTCUSDT"],
             "symbol_config": {
                 "current_intervals": [INTERVAL_TYPE.S5],
-                "current_intervals_generated": [INTERVAL_TYPE.HR1, INTERVAL_TYPE.D1],
+                "current_intervals_generated": [],
                 "current_candles_no": 2,
                 "history_intervals": [INTERVAL_TYPE.S5, INTERVAL_TYPE.HR1, INTERVAL_TYPE.D1],
                 "history_intervals_generated": [],
-                "history_candles_no": 5,
-                "indicators": [SMA(5)],
+                "history_candles_no": 15,
+                "indicators": [SMA(8), SMA(13)],
                 "exchange_type": EXCAHNGE_TYPE.MOCK_EXCAHNGE
             }
         }
@@ -51,7 +52,8 @@ sample_config = {
     }
 }
 
-backtest_config = {
+def backtest_config():
+    return {
     # flag changes behaviour of engine and strategies will bound use paper trading with inmeroy db
     "backtest": True,
     "save_history_csv": True,
@@ -66,7 +68,7 @@ backtest_config = {
                 "history_intervals": [INTERVAL_TYPE.M15, INTERVAL_TYPE.M5],
                 "history_intervals_generated": [],
                 "history_candles_no": 10,
-                "indicators": [SMA(5)],
+                "indicators": [SMA(8)],
                 "exchange_type": EXCAHNGE_TYPE.MOCK_EXCAHNGE
             }
         }

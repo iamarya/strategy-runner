@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 
 from models.candle_update_detail import CandleUpdateDetail
+from services.market_watch_service import MarketWatchService
 
 default_columns = ['time', 'open', 'high', 'low', 'close', 'volume']
 
@@ -32,9 +33,9 @@ market_watch = {
 
 class MarketWatchManager:
 
-    def __init__(self, engine_config: EngineConfig) -> None:
+    def __init__(self, engine_config: EngineConfig, market_watch_service: MarketWatchService) -> None:
         # todo make it another class, market_watch_service and a MarketWatch class
-        self.market_watch = dict()
+        self.market_watch_service = market_watch_service
         # setup initial ma using config
         for symbols_config in engine_config.get_symbols_configs():
             for symbol in symbols_config.symbols:
@@ -53,25 +54,13 @@ class MarketWatchManager:
                 mw_item["length"] = 0
                 mw_item["last_updated_time"] = None
                 mw_item["symbol"] = symbol
-                self.market_watch[symbol] = mw_item
-
-    def get_ltp(self, symbol: str) -> float:
-        return self.market_watch[symbol].ltp
-
-    def get_candles(self, symbol: str, interval: INTERVAL_TYPE) -> pd.DataFrame:
-        return self.market_watch[symbol][interval]
-
-    def get_last_updated(self, symbol: str):
-        return self.market_watch[symbol].last_updated_time
-
-    def get_length(self, symbol: str):
-        return self.market_watch[symbol].length
+                self.market_watch_service.market_watch[symbol] = mw_item
 
     def add_update_candles(self, symbol: str, interval: INTERVAL_TYPE, candles: list[Candle]) -> CandleUpdateDetail:
-        df = self.market_watch[symbol][interval]
+        df = self.market_watch_service.market_watch[symbol][interval]
         candle_update_detail = CandleUpdateDetail(symbol, interval, False)
         for candle in candles:
-            # last_index = self.market_watch[symbol]["length"]
+            # last_index = self.market_watch_service.market_watch[symbol]["length"]
             wo_time = [candle.o, candle.h, candle.l, candle.c, candle.v]
             if candle.t in df.index:
                 if df.loc[candle.t, default_columns[1:]].values.flatten().tolist() != wo_time:
@@ -82,17 +71,17 @@ class MarketWatchManager:
                 # inserted
                 candle_update_detail.add_to_inserted(candle.t)
                 df.loc[candle.t, default_columns[1:]] = wo_time
-                # self.market_watch[symbol]["length"] = last_index+1
-        last_updated_time = self.market_watch[symbol]["last_updated_time"]
+                # self.market_watch_service.market_watch[symbol]["length"] = last_index+1
+        last_updated_time = self.market_watch_service.market_watch[symbol]["last_updated_time"]
         if last_updated_time is None or last_updated_time < candles[-1].t:
-            self.market_watch[symbol]["last_updated_time"] = candles[-1].t
-        self.market_watch[symbol]["ltp"] = candles[-1].c
-        # print(self.market_watch[symbol])
+            self.market_watch_service.market_watch[symbol]["last_updated_time"] = candles[-1].t
+        self.market_watch_service.market_watch[symbol]["ltp"] = candles[-1].c
+        # print(self.market_watch_service.market_watch[symbol])
         # print("candle_update_detail", candle_update_detail)
         return candle_update_detail
 
     def add_candles(self, symbol: str, interval: INTERVAL_TYPE, candles: list[Candle]) -> CandleUpdateDetail:
-        df: pd.DataFrame = self.market_watch[symbol][interval]
+        df: pd.DataFrame = self.market_watch_service.market_watch[symbol][interval]
         # create a new index series from candles
         add_df = pd.DataFrame([[c.t, c.o, c.h, c.l, c.c, c.v] for c in candles], columns=default_columns)
         add_df.set_index("time", inplace=True)
@@ -101,11 +90,11 @@ class MarketWatchManager:
         df = pd.concat([df, add_df])
         candle_update_detail = CandleUpdateDetail(symbol, interval, False)
         candle_update_detail.add_to_inserted_as_list(df.index.to_list())
-        self.market_watch[symbol][interval] = df
-        last_updated_time = self.market_watch[symbol]["last_updated_time"]
+        self.market_watch_service.market_watch[symbol][interval] = df
+        last_updated_time = self.market_watch_service.market_watch[symbol]["last_updated_time"]
         if last_updated_time is None or last_updated_time < candles[-1].t:
-            self.market_watch[symbol]["last_updated_time"] = candles[-1].t
-        self.market_watch[symbol]["ltp"] = candles[-1].c
+            self.market_watch_service.market_watch[symbol]["last_updated_time"] = candles[-1].t
+        self.market_watch_service.market_watch[symbol]["ltp"] = candles[-1].c
         return candle_update_detail
 
     '''
@@ -118,7 +107,7 @@ class MarketWatchManager:
         # print(
         #     f"generating candle for {target_interval.name} from {source_interval.name}")
         # print("source_candle_update_detail is", source_candle_update_detail)
-        source_df = self.market_watch[symbol][source_interval]
+        source_df = self.market_watch_service.market_watch[symbol][source_interval]
         source_start_index, _ = source_candle_update_detail.get_start_end_time()
         # todo will update formula one time offset is added to exchange
         start_index = math.floor(
@@ -135,7 +124,7 @@ class MarketWatchManager:
         generated_df.index = generated_df.index.astype('int64')
 
         candle_update_detail = CandleUpdateDetail(symbol, target_interval, True)
-        df = self.market_watch[symbol][target_interval]
+        df = self.market_watch_service.market_watch[symbol][target_interval]
         for index, row in generated_df.iterrows():
             time: int = index  # type: ignore
             if index in df.index:
@@ -174,7 +163,7 @@ class MarketWatchManager:
     def synthesized_all_candle_update_details_all_time(self) -> list[dict[str, list[CandleUpdateDetail]]]:
         all_times = pd.Series()
         # get all intervals for history candles
-        for item in self.market_watch.values():
+        for item in self.market_watch_service.market_watch.values():
             symbol = item['symbol']
             for key in item.keys():
                 if type(key) == INTERVAL_TYPE:
@@ -187,7 +176,7 @@ class MarketWatchManager:
         
         for time in all_times:
             symbol_dict = {}
-            for item in self.market_watch.values():
+            for item in self.market_watch_service.market_watch.values():
                 # for each symbol
                 symbol = item['symbol']
                 candles_for_symbol = []
@@ -211,7 +200,7 @@ class MarketWatchManager:
         # csv per symbol, per interval 
         if not os.path.exists('../tmp'):
             os.makedirs('../tmp')
-        for item in self.market_watch.values():
+        for item in self.market_watch_service.market_watch.values():
             symbol = item['symbol']
             for key in item.keys():
                 if type(key) == INTERVAL_TYPE:
@@ -219,7 +208,7 @@ class MarketWatchManager:
                     item[key].to_csv(filename, sep=',', encoding='utf-8', header='true')
 
     def get_market_watch(self, symbol: str) -> dict:
-        return self.market_watch[symbol]
+        return self.market_watch_service.market_watch[symbol]
 
     def print_market_watch(self, symbol: str) -> None:
         symbol_mw = self.get_market_watch(symbol)
