@@ -1,7 +1,11 @@
+import logging
+
 from models.candle_update_detail import CandleUpdateDetail
 from models.enums import *
 from models.event import Event
 from strategy.strategy import Strategy
+
+logger = logging.getLogger(__name__)
 
 symbol_to_trade = 'BTCUSDT'
 interval = INTERVAL_TYPE.S5
@@ -20,6 +24,7 @@ class SwingTradingStrategy(Strategy):
 
     def __init__(self) -> None:
         Strategy.__init__(self)
+        logger.warning("SwingTradingStrategy deployed")
         self.event_candle = None
         self.action = None
         self.state = STATE.START
@@ -34,27 +39,26 @@ class SwingTradingStrategy(Strategy):
         sma_8 = df.loc[time]['sma_8']
         sma_13 = df.loc[time]['sma_13']
         price = df.loc[time]['close']
-        print("SwingTradingStrategy executed", self.action, sma_8, sma_13, price)
+        logger.debug("SwingTradingStrategy executed %s, %s, %s, %s", self.action, sma_8, sma_13, price)
         if self.action == ACTION.BUY:
             if sma_8 > sma_13:
                 self.state = STATE.BUY_CONFIRMED
                 buy_price = price
-                print("bought at ", buy_price)
+                logger.warning("bought at %s", buy_price)
         if self.action == ACTION.SELL:
             if sma_8 < sma_13:
                 self.state = STATE.START
                 sell_price = price
                 profit = sell_price - buy_price
-                print("sold at ", sell_price, " profit:", profit)
+                logger.warning(f"sold at {sell_price} profit: {profit}")
                 total_profit = total_profit + profit
-                print("total profit: ", total_profit)
+                logger.warning("total profit: %s ", total_profit)
 
     # no http api sh call inside filter as it's not executed in separate thread
     # todo decide if market watch can be accessed from filter
     def filter(self, event: Event) -> bool:
-        print("SwingTradingStrategy filter")
+        logger.debug("SwingTradingStrategy filter")
         if event.type != EVENT_TYPE.CANDLE_EVENT or not event.value:
-            print("returned false from line 61")
             return False
         all_candle_update_details: dict[str, list[CandleUpdateDetail]] = event.value
         for event_candle in all_candle_update_details[symbol_to_trade]:
@@ -64,7 +68,5 @@ class SwingTradingStrategy(Strategy):
                     self.action = ACTION.BUY
                 elif self.state == STATE.BUY_CONFIRMED:
                     self.action = ACTION.SELL
-                print("returned true from line 71")
                 return True
-        print("returned false from line 73")
         return False

@@ -1,7 +1,6 @@
-
 import pandas as pd
+
 from models.enums import INTERVAL_TYPE
-from models.market_watch import MarketWatch
 
 '''
 Example:
@@ -19,6 +18,7 @@ market_watch = {
 }
 
 '''
+
 
 class MarketWatchService:
     def __init__(self) -> None:

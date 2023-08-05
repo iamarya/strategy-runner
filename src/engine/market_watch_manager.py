@@ -1,3 +1,4 @@
+import logging
 import math
 import os
 from models.candle import Candle
@@ -9,8 +10,9 @@ import numpy as np
 from models.candle_update_detail import CandleUpdateDetail
 from services.market_watch_service import MarketWatchService
 
-default_columns = ['time', 'open', 'high', 'low', 'close', 'volume']
+logger = logging.getLogger(__name__)
 
+default_columns = ['time', 'open', 'high', 'low', 'close', 'volume']
 pd.options.mode.copy_on_write = False
 
 
@@ -191,10 +193,10 @@ class MarketWatchManager:
 
     def print_market_watch(self, symbol: str) -> None:
         symbol_mw = self.get_market_watch(symbol)
-        print(f'\nMarket watches for symbol {symbol}')
+        logger.debug(f'\nMarket watches for symbol {symbol}')
         for each_int in INTERVAL_TYPE:
             if each_int in symbol_mw:
-                print(
+                logger.debug(
                     f"\n[symbol ={symbol}; last_updated_time = {symbol_mw['last_updated_time']};"
                     f" interval={each_int.name}; ltp = {symbol_mw['ltp']} ]")
-                print(symbol_mw[each_int])
+                logger.debug(symbol_mw[each_int])

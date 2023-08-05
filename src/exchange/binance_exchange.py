@@ -8,7 +8,9 @@ from models.candle import Candle
 from models.enums import INTERVAL_TYPE, MODE
 from exchange.exchange import Exchange
 from pyrate_limiter import Duration, RequestRate, Limiter
+import logging
 
+logger = logging.getLogger(__name__)
 load_dotenv()
 
 MAX_CANDLES = 1000
@@ -22,15 +24,15 @@ class BinanceExchange(Exchange):
     def __init__(self, mode: MODE) -> None:
         super().__init__()
         if mode == MODE.LIVE:
-            print("BinanceExchange is LIVE mode")
+            logger.info("BinanceExchange is LIVE mode")
             self._client = Client(
                 os.getenv('BINANCE_API_KEY'), os.getenv('BINANCE_API_SECRET'))
         elif mode == MODE.SANDBOX:
-            print("BinanceExchange is SANDBOX mode")
+            logger.info("BinanceExchange is SANDBOX mode")
             self._client = Client(os.getenv('TEST_BINANCE_API_KEY'), os.getenv(
                 'TEST_BINANCE_API_SECRET'), testnet=True)
         else:
-            print("BinanceExchange client not initiated as no mode is configured.")
+            logger.error("BinanceExchange client not initiated as no mode is configured.")
 
     def get_candles(self, symbol: str, interval: INTERVAL_TYPE, from_time: int, to_time: int) -> list[Candle]:
         interval_binance = self._get_interval(interval)
@@ -40,7 +42,7 @@ class BinanceExchange(Exchange):
         while start < to_time:
             candles.extend(self._get_candles_request(
                 symbol, interval_binance, start, end))  # type: ignore
-            start = start + interval.value*(MAX_CANDLES)
+            start = start + interval.value * MAX_CANDLES
             end = start + interval.value*(MAX_CANDLES-1)
             if end > to_time:
                 end = to_time
@@ -48,15 +50,16 @@ class BinanceExchange(Exchange):
 
     @request_weight_limiter.ratelimit('get_candles', delay=True, max_delay=360)
     def _get_candles_request(self, symbol: str, interval_binance: str, from_time: int, to_time: int) -> list[Candle]:
-        print(from_time, to_time)
-        sourec_candles = self._client.get_klines(
+        logger.debug(f'from_time: {from_time}, to_time:{to_time}')
+        source_candles = self._client.get_klines(
             symbol=symbol, interval=interval_binance, startTime=from_time*1000, endTime=to_time*1000, limit=MAX_CANDLES)
         candles = [Candle(math.floor(i[0]/1000), float(i[1]), float(i[2]),
-                          float(i[3]), float(i[4]), float(i[5])) for i in sourec_candles]
+                          float(i[3]), float(i[4]), float(i[5])) for i in source_candles]
         # print(candles)
         return candles
 
-    def _get_interval(self, from_interval: INTERVAL_TYPE) -> str:
+    @staticmethod
+    def _get_interval(from_interval: INTERVAL_TYPE) -> str:
         if from_interval == INTERVAL_TYPE.M5:
             return Client.KLINE_INTERVAL_5MINUTE
         elif from_interval == INTERVAL_TYPE.M15:
@@ -81,5 +84,5 @@ if __name__ == '__main__':
     from_time = math.floor(
         from_time / interval.value) * interval.value
     to_time = int(current_time.timestamp())
-    print(from_time, to_time)
-    print('\n', b.get_candles('BTCUSDT', INTERVAL_TYPE.M15, from_time, to_time))
+    logger.debug(f'from_time: {from_time}, to_time:{to_time}')
+    logger.debug(b.get_candles('BTCUSDT', INTERVAL_TYPE.M15, from_time, to_time))

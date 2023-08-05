@@ -1,3 +1,4 @@
+import logging
 import math
 import random
 
@@ -5,13 +6,13 @@ from exchange.exchange import Exchange
 from models.candle import Candle
 from models.enums import INTERVAL_TYPE
 
-
+logger = logging.getLogger(__name__)
 class MockExchange(Exchange):
     # has propoties charge = 1.5, exchange_start_time, end_time, timezone todo
 
     def get_candles(self, symbol: str, inetval: INTERVAL_TYPE, from_time: int, to_time: int) -> list[Candle]:
         candles = []
-        print(
+        logger.debug(
             f"from_time={from_time}, to_time={to_time} in secs for interval={inetval.name}")
         current_candle_time = math.floor(
             from_time / inetval.value) * inetval.value

@@ -1,8 +1,5 @@
-# exchange quote service
-from models.enums import INTERVAL_TYPE
-from models.candle import Candle
-from datetime import datetime
-from exchange.exchange import Exchange, MockExchange
+from exchange.mock_exchange import MockExchange
+from exchange.exchange import Exchange
 
 
 class PositionService:

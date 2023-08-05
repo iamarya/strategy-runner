@@ -1,6 +1,6 @@
 from flask import Flask
 from models.engine_config import EngineConfig
-from engiene.engine import Engine
+from engine.engine import Engine
 import config.configs as configs
 
 app = Flask(__name__)
@@ -8,11 +8,12 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    return 'Trading Bot!'
+    return '└|∵|┘'
 
 
 # main driver function
 if __name__ == '__main__':
+    print('└[∵┌]└[ ∵ ]┘[┐∵]┘')
     # choose which config to use
     engine_config = EngineConfig(configs.sample_config())
     engine = Engine(engine_config)

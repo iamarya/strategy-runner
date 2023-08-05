@@ -5,6 +5,18 @@ from exchange.mock_exchange import MockExchange
 from indicators.sma import SMA
 from models.enums import DB_TYPE, EXCAHNGE_TYPE, INTERVAL_TYPE, MODE
 from strategy.swing_trading_strategy import SwingTradingStrategy
+import logging
+
+logging.basicConfig(level=logging.ERROR, format= '%(created)f:%(levelname)s:%(name)s:%(module)s:%(message)s')
+logging.getLogger('engine').setLevel(logging.DEBUG)
+logging.getLogger('exchange').setLevel(logging.INFO)
+logging.getLogger('strategy').setLevel(logging.INFO)
+logging.getLogger('strategy.swing_trading_strategy').setLevel(logging.INFO)
+logging.getLogger('db').setLevel(logging.INFO)
+logging.getLogger('indicators').setLevel(logging.INFO)
+logging.getLogger('models').setLevel(logging.INFO)
+logging.getLogger('utils').setLevel(logging.INFO)
+logging.getLogger('services').setLevel(logging.DEBUG)
 
 
 def sample_config():
@@ -58,7 +70,7 @@ def backtest_config():
     return {
         # flag changes behaviour of engine and strategies will bound use paper trading with in memory db
         "backtest": True,
-        "save_history_csv": True,
+        "save_history_csv": False,
         "symbol_configs": [
             {
                 # add multiple symbols here for same config
@@ -67,11 +79,11 @@ def backtest_config():
                     "current_intervals": [],
                     "current_intervals_generated": [],
                     "current_candles_no": 0,
-                    "history_intervals": [INTERVAL_TYPE.M15, INTERVAL_TYPE.M5],
+                    "history_intervals": [INTERVAL_TYPE.M5],
                     "history_intervals_generated": [],
-                    "history_candles_no": 10,
-                    "indicators": [SMA(8)],
-                    "exchange_type": EXCAHNGE_TYPE.MOCK_EXCAHNGE
+                    "history_candles_no": 10000,
+                    "indicators": [SMA(8), SMA(13)],
+                    "exchange_type": EXCAHNGE_TYPE.BINANCE_EXCAHNGE
                 }
             }
         ],
@@ -88,7 +100,7 @@ def backtest_config():
         },
         "exchange_configs": {
             EXCAHNGE_TYPE.MOCK_EXCAHNGE: MockExchange(),
-            EXCAHNGE_TYPE.BINANCE_EXCAHNGE: BinanceExchange(MODE.SANDBOX)
+            EXCAHNGE_TYPE.BINANCE_EXCAHNGE: BinanceExchange(MODE.LIVE)
         }
     }
 

@@ -1,6 +1,10 @@
+import logging
+
 from models.event_queue import EventQueue
 from services.market_watch_service import MarketWatchService
 from strategy.strategy import Strategy
+
+logger = logging.getLogger(__name__)
 
 '''
 strategy_config = {
@@ -55,11 +59,11 @@ class StrategyManager:
         # that time check if strategy need to run based on time
         # if its not empty then check for symbol and interval which strategies need to called
         strategies_torun: list[Strategy] = []
-        print("get notified")
+        logger.debug("get notified")
         event = self.event_queue.pull()
         if event is None:
             return []
-        print('event_candles', event.type, event.value)
+        logger.debug('event_candles %s %s', event.type, event.value)
         for strategy in self.strategies:
             if strategy.filter(event):
                 strategies_torun.append(strategy)
