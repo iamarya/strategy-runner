@@ -7,7 +7,19 @@ from models.enums import DB_TYPE, EXCAHNGE_TYPE, INTERVAL_TYPE, MODE
 from strategy.swing_trading_strategy import SwingTradingStrategy
 import logging
 
-logging.basicConfig(level=logging.ERROR, format= '%(created)f:%(levelname)s:%(name)s:%(module)s:%(message)s')
+from utils.custom_logger import CustomFormatter
+
+
+
+# Define format for logs
+fmt = '%(asctime)s | %(levelname)8s | %(message)s'
+
+# Create stdout handler for logging to the console (logs all five levels)
+stdout_handler = logging.StreamHandler()
+stdout_handler.setLevel(logging.DEBUG)
+stdout_handler.setFormatter(CustomFormatter(fmt))
+logging.basicConfig(level=logging.ERROR, handlers=[stdout_handler])
+
 logging.getLogger('engine').setLevel(logging.DEBUG)
 logging.getLogger('exchange').setLevel(logging.INFO)
 logging.getLogger('strategy').setLevel(logging.INFO)
