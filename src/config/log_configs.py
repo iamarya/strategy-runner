@@ -13,7 +13,7 @@ def setup():
     stdout_handler.setFormatter(CustomFormatter(fmt))
     logging.basicConfig(level=logging.ERROR, handlers=[stdout_handler])
 
-    logging.getLogger('engine').setLevel(logging.DEBUG)
+    logging.getLogger('engine').setLevel(logging.INFO)
     logging.getLogger('exchange').setLevel(logging.INFO)
     logging.getLogger('strategy').setLevel(logging.INFO)
     logging.getLogger('strategy.swing_trading_strategy').setLevel(logging.INFO)
@@ -21,4 +21,4 @@ def setup():
     logging.getLogger('indicators').setLevel(logging.INFO)
     logging.getLogger('models').setLevel(logging.INFO)
     logging.getLogger('utils').setLevel(logging.INFO)
-    logging.getLogger('services').setLevel(logging.DEBUG)
+    logging.getLogger('services').setLevel(logging.INFO)

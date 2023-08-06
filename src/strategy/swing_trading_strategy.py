@@ -8,7 +8,7 @@ from strategy.strategy import Strategy
 logger = logging.getLogger(__name__)
 
 symbol_to_trade = 'BTCUSDT'
-interval = INTERVAL_TYPE.S5
+interval = INTERVAL_TYPE.M5
 indicators = ("sma_8", "sma_13")
 buy_window = ('', '')
 sell_window = ('', '')
@@ -39,7 +39,7 @@ class SwingTradingStrategy(Strategy):
         sma_8 = df.loc[time]['sma_8']
         sma_13 = df.loc[time]['sma_13']
         price = df.loc[time]['close']
-        logger.debug("SwingTradingStrategy executed %s, %s, %s, %s", self.action, sma_8, sma_13, price)
+        logger.debug("executed %s, sma_8: %s, sma_13: %s, price: %s", self.action, sma_8, sma_13, price)
         if self.action == ACTION.BUY:
             if sma_8 > sma_13:
                 self.state = STATE.BUY_CONFIRMED
@@ -62,7 +62,7 @@ class SwingTradingStrategy(Strategy):
             return False
         all_candle_update_details: dict[str, list[CandleUpdateDetail]] = event.value
         for event_candle in all_candle_update_details[symbol_to_trade]:
-            if event_candle.interval == INTERVAL_TYPE.S5 and event_candle.inserted:
+            if event_candle.interval == interval and event_candle.inserted:
                 self.event_candle = event_candle
                 if self.state == STATE.START:
                     self.action = ACTION.BUY

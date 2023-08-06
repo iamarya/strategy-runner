@@ -54,7 +54,7 @@ class Engine(threading.Thread):
 
     def execute_back_testing(self):
         # backtesting only
-        logger.debug("doing backtesting only")
+        logger.info("doing backtesting only")
         # save candles
         if self.engine_config.is_save_history_csv():
             self.market_watch_manager.save_candles_csv()
@@ -88,7 +88,7 @@ class Engine(threading.Thread):
 
     # todo all this to market_runner
     def get_history_all(self):
-        logger.debug("inside get_history_all")
+        logger.info("inside get_history_all")
         # in case of data extract or backtesting it might be some past date
         current_time = datetime.now()
         calls = []
@@ -101,8 +101,7 @@ class Engine(threading.Thread):
             call.start()
         for call in calls:
             call.join()
-        logger.debug('Time taken to run get_history_all %s',
-                     datetime.now() - current_time)
+        logger.info('Time taken to run get_history_all %s', datetime.now() - current_time)
 
     def get_history_symbol(self, symbol: str, config: SymbolConfig, current_time):
         try:
@@ -192,7 +191,7 @@ class Engine(threading.Thread):
                 candle_update_detail, indicator)
 
     def run_market_watch_scheduler(self):
-        logger.debug(f"Scheduler Triggered @ {datetime.now()} ===")
+        logger.info(f"Scheduler Triggered @ {datetime.now()} ===")
         self.get_current_all()
         if self.all_candle_update_details:
             self.event_queue.push(CandleEvent(self.all_candle_update_details))
