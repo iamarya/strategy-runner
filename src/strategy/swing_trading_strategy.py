@@ -18,6 +18,10 @@ buy_price = 0
 sell_price = 0
 total_profit = 0
 
+# todo strategy will call order service and pass the exchange in method argument
+# both exchange and order service will be a attribute of the strategy
+# for now exchange for a single type is singleton (can it be not singleton?)
+# services also singleton but stateless
 
 # strategies are stateful in nature, don't share between threads
 class SwingTradingStrategy(Strategy):
