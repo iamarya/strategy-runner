@@ -1,7 +1,9 @@
 from flask import Flask
+
+from config import log_configs
 from models.engine_config import EngineConfig
 from engine.engine import Engine
-import config.configs as configs
+import config.engine_configs as configs
 
 app = Flask(__name__)
 
@@ -14,6 +16,7 @@ def hello():
 # main driver function
 if __name__ == '__main__':
     print('└[∵┌]└[ ∵ ]┘[┐∵]┘')
+    log_configs.setup()
     # choose which config to use
     engine_config = EngineConfig(configs.sample_config())
     engine = Engine(engine_config)
