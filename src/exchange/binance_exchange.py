@@ -24,11 +24,11 @@ class BinanceExchange(Exchange):
     def __init__(self, mode: MODE) -> None:
         super().__init__()
         if mode == MODE.LIVE:
-            logger.info("BinanceExchange is LIVE mode")
+            logger.warning("BinanceExchange is LIVE mode")
             self._client = Client(
                 os.getenv('BINANCE_API_KEY'), os.getenv('BINANCE_API_SECRET'))
         elif mode == MODE.SANDBOX:
-            logger.info("BinanceExchange is SANDBOX mode")
+            logger.warning("BinanceExchange is SANDBOX mode")
             self._client = Client(os.getenv('TEST_BINANCE_API_KEY'), os.getenv(
                 'TEST_BINANCE_API_SECRET'), testnet=True)
         else:

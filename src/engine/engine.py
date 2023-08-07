@@ -137,7 +137,8 @@ class Engine(threading.Thread):
             intervals = sorted(config.current_intervals())
             intervals_generated = sorted(config.current_intervals_generated())
             candles_no = config.current_candles_no()
-
+        if not candles_no:
+            return
         candle_update_details: list[CandleUpdateDetail] = []
         all_intervals = sorted(
             config.current_intervals() + config.history_intervals())
