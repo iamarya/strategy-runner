@@ -32,19 +32,24 @@ class SwingTradingStrategy(Strategy):
     def __init__(self) -> None:
         Strategy.__init__(self)
         logger.warning("SwingTradingStrategy deployed")
-        self.event_candle = None
+        self.event_candle: CandleUpdateDetail | None = None
         self.action = None
         self.state = STATE.START
 
     # this called in a separate thread
     def execute(self):
         global buy_price, sell_price, total_profit
-        assert self.event_candle is not None
+        if self.event_candle is None: 
+            return
         time = self.event_candle.inserted[0]
         df = self.market_watch_service.get_candles(symbol_to_trade, interval)
         # todo get the previous candle of just inserted, write a service method for this
-        sma_8 = df.loc[time]['sma_8']
-        sma_13 = df.loc[time]['sma_13']
+        try:
+            sma_8 = df.loc[time]['sma_8']
+            sma_13 = df.loc[time]['sma_13']
+        except Exception as e:
+            logger.error("Column not found", e)
+            return
         price = df.loc[time]['close']
         # check NaN for value from market watch | call a validate method as 1st line
         if np.isnan([sma_8, sma_13, price]).any():
