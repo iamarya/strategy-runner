@@ -39,11 +39,15 @@ class SwingTradingStrategy(Strategy):
     # this called in a separate thread
     def execute(self):
         global buy_price, sell_price, total_profit
-        if self.event_candle is None: 
+        if self.event_candle is None:
             return
-        time = self.event_candle.inserted[0]
+        latest_time = self.event_candle.inserted[0]
+        # get the previous candle of just inserted, todo write a service method for this
         df = self.market_watch_service.get_candles(symbol_to_trade, interval)
-        # todo get the previous candle of just inserted, write a service method for this
+        index_of_current_time = df.index.get_loc(latest_time)
+        if index_of_current_time == 0:
+            return  # 1st candle no previous so exit
+        time = df.iloc[index_of_current_time - 1].name
         try:
             sma_8 = df.loc[time]['sma_8']
             sma_13 = df.loc[time]['sma_13']
