@@ -16,7 +16,7 @@ def setup():
     logging.getLogger('engine').setLevel(logging.INFO)
     logging.getLogger('exchange').setLevel(logging.INFO)
     logging.getLogger('strategy').setLevel(logging.INFO)
-    logging.getLogger('strategy.swing_trading_strategy').setLevel(logging.INFO)
+    logging.getLogger('strategy.swing_trading_strategy').setLevel(logging.DEBUG)
     logging.getLogger('db').setLevel(logging.INFO)
     logging.getLogger('indicators').setLevel(logging.INFO)
     logging.getLogger('models').setLevel(logging.INFO)

@@ -18,7 +18,7 @@ if __name__ == '__main__':
     print('└[∵┌]└[ ∵ ]┘[┐∵]┘')
     log_configs.setup()
     # choose which config to use
-    engine_config = EngineConfig(configs.backtest_config())
+    engine_config = EngineConfig(configs.csv_config())
     engine = Engine(engine_config)
     engine.start()
     if not engine_config.is_backtest():
