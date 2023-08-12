@@ -7,6 +7,7 @@ import traceback
 
 import schedule
 from models.event import CandleEvent
+from models.record_book import RecordBook
 from services.market_watch_service import MarketWatch, MarketWatchService
 
 import utils.market_watch_utils as market_watch_utils
@@ -14,6 +15,7 @@ from models.engine_config import EngineConfig, SymbolConfig
 from engine.strategy_manager import StrategyManager
 from models.candle_update_detail import CandleUpdateDetail
 from models.event_queue import EventQueue
+from services.orderbook_service import OrderBookService
 from services.quote_service import QuoteService
 
 logger = logging.getLogger(__name__)
@@ -29,8 +31,11 @@ class Engine(threading.Thread):
                                                        self.market_watch)
         self.quote_service = QuoteService()
         self.event_queue = EventQueue()
+        self.record_book = RecordBook()
+        self.order_book_service = OrderBookService(self.record_book)
         self.strategy_manager = StrategyManager(
-            self.engine_config.get_strategies(), self.event_queue, self.market_watch)
+            self.engine_config.get_strategies(), self.event_queue, self.market_watch,
+            self.order_book_service)
         self.all_candle_update_details: dict[str, list[CandleUpdateDetail]] = {}
 
     def run(self):

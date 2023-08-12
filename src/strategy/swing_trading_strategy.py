@@ -32,12 +32,13 @@ total_profit = 0
 class SwingTradingStrategy(Strategy):
 
     def __init__(self) -> None:
-        Strategy.__init__(self)
+        Strategy.__init__(self, 'swing_trading_strategy')
         logger.warning("SwingTradingStrategy deployed")
         self.event_candle: CandleUpdateDetail | None = None
         self.action = None # also not needed if can be derived from state
         self.status = STATE.START # may be not needed
-        self.state = None
+        self.state = None # may be not needed
+        # self.records is only needed
 
     # this called in a separate thread
     def execute(self):

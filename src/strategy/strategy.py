@@ -4,12 +4,13 @@ from db.db import Db
 from exchange.exchange import Exchange
 from models.event import Event
 from models.market_watch import MarketWatch
+from models.record_book import Record
 
 
 class Strategy:
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, name:str) -> None:
+        self.name = name
 
     @abstractmethod
     def execute(self):
@@ -29,6 +30,9 @@ class Strategy:
 
     def set_exchange(self, exchange: Exchange):
         self.exchange = exchange
-        
+
     def set_market_watch(self, market_watch: MarketWatch):
         self.market_watch = market_watch
+
+    def set_records(self, records: list[Record]):
+        self.records = records

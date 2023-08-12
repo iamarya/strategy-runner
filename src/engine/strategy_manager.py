@@ -2,6 +2,7 @@ import logging
 
 from models.event_queue import EventQueue
 from services.market_watch_service import MarketWatch
+from services.orderbook_service import OrderBookService
 from strategy.strategy import Strategy
 
 logger = logging.getLogger(__name__)
@@ -48,10 +49,11 @@ candle_event_value  =
 
 class StrategyManager:
     def __init__(self, strategies: list[Strategy], event_queue: EventQueue,
-                 market_watch: MarketWatch) -> None:
+                 market_watch: MarketWatch, order_book_service: OrderBookService) -> None:
         self.strategies: list[Strategy] = strategies  # register strategies
         for strategy in self.strategies:
             strategy.set_market_watch(market_watch)
+            strategy.set_records(order_book_service.get_records(strategy.name))
         self.event_queue = event_queue
 
     def notify(self) -> list[Strategy]:

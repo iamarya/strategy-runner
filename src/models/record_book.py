@@ -1,3 +1,12 @@
+class RecordBook:
+
+    def __int__(self):
+        self.data = dict(str, list(Record))
+
+    def initialise(self):
+        pass
+
+
 class Record:
 
     def __int__(self):
@@ -15,12 +24,3 @@ class Record:
         self.cost = None
         self.profit = None
         self.status = None  # pending, completed, canceled, closed
-
-
-class RecordBook:
-
-    def __int__(self):
-        self.data = dict(str, list(Record))
-
-    def initialise(self):
-        pass
