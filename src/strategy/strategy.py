@@ -3,7 +3,7 @@ from abc import abstractmethod
 from db.db import Db
 from exchange.exchange import Exchange
 from models.event import Event
-from services.market_watch_service import MarketWatchService
+from models.market_watch import MarketWatch
 
 
 class Strategy:
@@ -30,5 +30,5 @@ class Strategy:
     def set_exchange(self, exchange: Exchange):
         self.exchange = exchange
         
-    def set_market_watch_service(self, market_watch_service: MarketWatchService):
-        self.market_watch_service = market_watch_service
+    def set_market_watch(self, market_watch: MarketWatch):
+        self.market_watch = market_watch

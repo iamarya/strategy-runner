@@ -7,12 +7,10 @@ import traceback
 
 import schedule
 from models.event import CandleEvent
-from services.market_watch_service import MarketWatchService
+from services.market_watch_service import MarketWatch, MarketWatchService
 
 import utils.market_watch_utils as market_watch_utils
 from models.engine_config import EngineConfig, SymbolConfig
-from engine.indicator_manager import IndicatorManager
-from engine.market_watch_manager import MarketWatchManager
 from engine.strategy_manager import StrategyManager
 from models.candle_update_detail import CandleUpdateDetail
 from models.event_queue import EventQueue
@@ -26,14 +24,13 @@ class Engine(threading.Thread):
     def __init__(self, engine_config: EngineConfig) -> None:
         threading.Thread.__init__(self, name="engine_thread", daemon=True)
         self.engine_config = engine_config
-        self.market_watch_service = MarketWatchService()
-        self.market_watch_manager = MarketWatchManager(self.engine_config.get_symbols_configs(),
-                                                       self.market_watch_service)
-        self.indicator_manager = IndicatorManager(self.market_watch_service)
+        self.market_watch = MarketWatch()
+        self.market_watch_service = MarketWatchService(self.engine_config.get_symbols_configs(),
+                                                       self.market_watch)
         self.quote_service = QuoteService()
         self.event_queue = EventQueue()
         self.strategy_manager = StrategyManager(
-            self.engine_config.get_strategies(), self.event_queue, self.market_watch_service)
+            self.engine_config.get_strategies(), self.event_queue, self.market_watch)
         self.all_candle_update_details: dict[str, list[CandleUpdateDetail]] = {}
 
     def run(self):
@@ -57,12 +54,12 @@ class Engine(threading.Thread):
         logger.info("doing backtesting only")
         # save candles
         if self.engine_config.is_save_history_csv():
-            self.market_watch_manager.save_candles_csv()
+            self.market_watch_service.save_candles_csv()
         # execute strategies
         if self.strategy_manager.strategies:
             # synthesizing candle events
             synthesized_all_candle_update_details_all_time = \
-                self.market_watch_manager.synthesized_all_candle_update_details_all_time()
+                self.market_watch_service.synthesized_all_candle_update_details_all_time()
             for all_candle_update_details_at_time in synthesized_all_candle_update_details_all_time:
                 self.event_queue.push(CandleEvent(all_candle_update_details_at_time))
                 strategies = self.strategy_manager.notify()
@@ -153,7 +150,7 @@ class Engine(threading.Thread):
                 symbol, config, candle_update_details, all_intervals, interval)
 
         # printing things
-        self.market_watch_manager.print_market_watch(symbol)
+        self.market_watch_service.print_market_watch(symbol)
         # candle_update_details: list[CandleUpdateDetail] is for a particular time for all intervals for a single symbol
         if not is_history:
             logger.debug("candle_update_details: %s", candle_update_details)
@@ -166,7 +163,7 @@ class Engine(threading.Thread):
             all_intervals, interval)
         source_candle_update_detail = market_watch_utils.get_candle_update_detail_for_interval(
             candle_update_details, source_interval)
-        candle_update_detail = self.market_watch_manager.generate_candles(
+        candle_update_detail = self.market_watch_service.generate_candles(
             symbol, source_interval, source_candle_update_detail, interval)
         candle_update_details.append(candle_update_detail)
         self.create_update_indicators(config, candle_update_detail)
@@ -176,19 +173,19 @@ class Engine(threading.Thread):
         candles = self.quote_service.get_candles(config.exchange(),
                                                  symbol, interval, current_time, candles_no)
         if not is_history:
-            candle_update_detail = self.market_watch_manager.add_update_candles(
+            candle_update_detail = self.market_watch_service.add_update_candles(
                 symbol, interval, candles)
         else:
-            # self.market_watch_manager.add_update_candles will work here as well
+            # self.market_watch_service.add_update_candles will work here as well
             # but add_candles is more efficient by just adding all at a time
-            candle_update_detail = self.market_watch_manager.add_candles(
+            candle_update_detail = self.market_watch_service.add_candles(
                 symbol, interval, candles)
         candle_update_details.append(candle_update_detail)
         self.create_update_indicators(config, candle_update_detail)
 
     def create_update_indicators(self, config, candle_update_detail):
         for indicator in config.indicators():
-            self.indicator_manager.create_update_indicators(
+            self.market_watch_service.create_update_indicators(
                 candle_update_detail, indicator)
 
     def run_market_watch_scheduler(self):

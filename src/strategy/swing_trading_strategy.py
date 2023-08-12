@@ -46,7 +46,7 @@ class SwingTradingStrategy(Strategy):
             return
         latest_time = self.event_candle.inserted[-1]
         # get the previous candle of just inserted, todo write a service method for this
-        df = self.market_watch_service.get_candles(symbol_to_trade, interval)
+        df = self.market_watch.get_candles(symbol_to_trade, interval)
         index_of_current_time = df.index.get_loc(latest_time)
         if index_of_current_time == 0:
             return  # 1st candle no previous so exit
