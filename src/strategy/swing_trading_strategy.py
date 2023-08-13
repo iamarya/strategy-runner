@@ -82,7 +82,7 @@ class SwingTradingStrategy(Strategy):
         sma_low = df.loc[time][indicators[0]]
         sma_high = df.loc[time][indicators[1]]
         price = df.loc[time]['close']
-        records = self.order_book_service.get_records(self.name)
+        records = self.order_book_service.get_records(self.get_name())
         action = get_action(records)
         logger.debug(f'action is {action}')
         # check NaN for value from market watch | call a validate method as 1st line
@@ -97,14 +97,14 @@ class SwingTradingStrategy(Strategy):
             if sma_low > sma_high:
                 # self.status = STATE.BUY_CONFIRMED
                 buy_price = price
-                self.order_book_service.buy(self.exchange, self.db, self.name, symbol_to_trade, buy_price)
+                self.order_book_service.buy(self.exchange, self.db, self.get_name(), symbol_to_trade, buy_price)
                 logger.info("bought at %s", buy_price)
         if action == ACTION.SELL:
             if sma_low < sma_high:
                 # self.status = STATE.START
                 sell_price = price
-                self.order_book_service.sell(self.exchange, self.db, self.name, symbol_to_trade, sell_price)
-                self.order_book_service.mark_close(self.exchange, self.db, self.name, symbol_to_trade)
+                self.order_book_service.sell(self.exchange, self.db, self.get_name(), symbol_to_trade, sell_price)
+                self.order_book_service.mark_close(self.exchange, self.db, self.get_name(), symbol_to_trade)
                 # profit = sell_price - buy_price
                 logger.info(f"sold at {sell_price}")
                 # total_profit = total_profit + profit

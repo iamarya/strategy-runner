@@ -9,8 +9,8 @@ from services.orderbook_service import OrderBookService
 
 class Strategy:
 
-    def __init__(self, name:str) -> None:
-        self.name = name
+    def __init__(self, name_prefix:str) -> None:
+        self.name_prefix = name_prefix
 
     @abstractmethod
     def execute(self):
@@ -38,4 +38,7 @@ class Strategy:
         self.order_book_service = order_book_service
 
     def initialise_record_book(self):
-        self.order_book_service.initialise_record_book(self.name)
+        self.order_book_service.initialise_record_book(self.get_name())
+
+    def get_name(self):
+        return self.name_prefix + ('_live' if self.exchange.is_live() else '_paper')

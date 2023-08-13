@@ -24,6 +24,7 @@ class Record:
         self.profit = None
         self.state = state  # pending, completed, canceled, closed
         self.closed = False
+        # self.exchange = None # to track it for paper trading or actual
 
 
 
@@ -43,7 +44,7 @@ class RecordBook:
         return self.data[strategy_name]
 
     def print_record_book(self):
-        for symbol in self.data.keys():
-            logger.info('record book for symbol: %s', symbol)
+        for strategy in self.data.keys():
+            logger.info('record book for symbol: %s', strategy)
             # todo change to logging
-            print(self.data.get(symbol))
+            print(self.data.get(strategy))

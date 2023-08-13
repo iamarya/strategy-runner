@@ -23,16 +23,20 @@ class BinanceExchange(Exchange):
 
     def __init__(self, mode: MODE) -> None:
         super().__init__()
-        if mode == MODE.LIVE:
+        self._mode = mode
+        if self._mode == MODE.LIVE:
             logger.warning("BinanceExchange is LIVE mode")
             self._client = Client(
                 os.getenv('BINANCE_API_KEY'), os.getenv('BINANCE_API_SECRET'))
-        elif mode == MODE.SANDBOX:
+        elif self._mode == MODE.SANDBOX:
             logger.warning("BinanceExchange is SANDBOX mode")
             self._client = Client(os.getenv('TEST_BINANCE_API_KEY'), os.getenv(
                 'TEST_BINANCE_API_SECRET'), testnet=True)
         else:
             logger.error("BinanceExchange client not initiated as no mode is configured.")
+
+    def is_live(self) -> bool:
+        return self._mode == MODE.LIVE
 
     def get_candles(self, symbol: str, interval: INTERVAL_TYPE, from_time: int, to_time: int) -> list[Candle]:
         interval_binance = self._get_interval(interval)

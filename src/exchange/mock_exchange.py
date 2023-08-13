@@ -7,7 +7,13 @@ from models.candle import Candle
 from models.enums import INTERVAL_TYPE
 
 logger = logging.getLogger(__name__)
+
+
 class MockExchange(Exchange):
+
+    def is_live(self) -> bool:
+        return False
+
     # has propoties charge = 1.5, exchange_start_time, end_time, timezone todo
 
     def get_candles(self, symbol: str, inetval: INTERVAL_TYPE, from_time: int, to_time: int) -> list[Candle]:

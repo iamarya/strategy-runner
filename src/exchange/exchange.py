@@ -8,5 +8,8 @@ class Exchange:
         # get current running candle and last completed candle
         return []
 
+    def is_live(self) -> bool:
+        pass
+
 # python -m strategy_runner.exchange.exchange
 # for testing

@@ -18,6 +18,10 @@ def get_csv_file(symbol, interval):
 
 
 class CsvExchange(MockExchange):
+
+    def is_live(self) -> bool:
+        return False
+    
     def get_candles(self, symbol: str, interval: INTERVAL_TYPE, from_time: int, to_time: int) -> list[Candle]:
         candles = []
         csv_file = get_csv_file(symbol, interval)
