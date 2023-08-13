@@ -53,7 +53,8 @@ class StrategyManager:
         self.strategies: list[Strategy] = strategies  # register strategies
         for strategy in self.strategies:
             strategy.set_market_watch(market_watch)
-            strategy.set_records(order_book_service.get_records(strategy.name))
+            strategy.set_order_book_service(order_book_service)
+            strategy.initialise_record_book()
         self.event_queue = event_queue
 
     def notify(self) -> list[Strategy]:

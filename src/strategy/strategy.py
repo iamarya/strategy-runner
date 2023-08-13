@@ -4,7 +4,7 @@ from db.db import Db
 from exchange.exchange import Exchange
 from models.event import Event
 from models.market_watch import MarketWatch
-from models.record_book import Record
+from services.orderbook_service import OrderBookService
 
 
 class Strategy:
@@ -14,7 +14,7 @@ class Strategy:
 
     @abstractmethod
     def execute(self):
-        # this will run parellaly
+        # this will run parallel
         pass
 
     @abstractmethod
@@ -34,5 +34,8 @@ class Strategy:
     def set_market_watch(self, market_watch: MarketWatch):
         self.market_watch = market_watch
 
-    def set_records(self, records: list[Record]):
-        self.records = records
+    def set_order_book_service(self, order_book_service: OrderBookService):
+        self.order_book_service = order_book_service
+
+    def initialise_record_book(self):
+        self.order_book_service.initialise_record_book(self.name)

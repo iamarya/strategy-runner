@@ -146,6 +146,8 @@ class MarketWatchService:
     '''
 
     def synthesized_all_candle_update_details_all_time(self) -> list[dict[str, list[CandleUpdateDetail]]]:
+        # todo simulate synthesized candles to as natural as possible, may with a inserted and a update candle
+        #     to pick the current price and last candle things
         all_times = pd.Series()
         # get all intervals for history candles
         for item in self.market_watch_service.data.values():

@@ -75,11 +75,11 @@ def backtest_config():
                     "current_intervals": [],
                     "current_intervals_generated": [],
                     "current_candles_no": 0,
-                    "history_intervals": [INTERVAL_TYPE.M5],
+                    "history_intervals": [INTERVAL_TYPE.M15],
                     "history_intervals_generated": [],
-                    "history_candles_no": 1000,
-                    "indicators": [SMA(8), SMA(13)],
-                    "exchange_type": EXCAHNGE_TYPE.BINANCE_EXCAHNGE
+                    "history_candles_no": 100,
+                    "indicators": [SMA(9), SMA(21)],
+                    "exchange_type": EXCAHNGE_TYPE.MOCK_EXCAHNGE
                 }
             }
         ],

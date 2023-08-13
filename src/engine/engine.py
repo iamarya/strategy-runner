@@ -70,6 +70,7 @@ class Engine(threading.Thread):
                 strategies = self.strategy_manager.notify()
                 for strategy in strategies:
                     self.strategy_manager.run(strategy)
+        self.order_book_service.print_record_book()
 
     # todo move this to strategy_runner
     def run_strategies(self):

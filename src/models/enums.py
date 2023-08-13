@@ -1,5 +1,6 @@
 from enum import Enum, IntEnum
 
+
 # IntEnum for comparing enum type <, >
 
 
@@ -39,6 +40,12 @@ class EVENT_TYPE(Enum):
     TIMER_EVENT = 2
 
 
+class ORDER_TYPE(Enum):
+    BUY = 1
+    SELL = 2
+    SL = 3
+
+
 class STATE(Enum):
     START = 1
     BUY_PENDING = 2
@@ -61,6 +68,7 @@ class ACTION(Enum):
     SELL_CANCEL = 6
     EXIT = 7
     # todo an idea can action and state can be combined??
+
 
 class MODE(Enum):
     LIVE = 1
