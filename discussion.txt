@@ -1,8 +1,8 @@
 when to call strategy after all current finish or by symbol? 
-what will happen if need to depend on another?
+what will happen if you need to depend on another?
 during backtest need same like all history completed then call strategy?
 
-multithreading for strategy separatly? therad per strategy or per strategy per symbol?
+multithreading for strategy separately? thread per strategy or per strategy per symbol?
 
 which strategy needs what symbol or send each symbol then strategy decides if need to use?
 
@@ -10,23 +10,27 @@ which strategy needs what symbol or send each symbol then strategy decides if ne
 
 
 ## ToDo
-- Safeguards, ex: engine config validation, safe exit, shutdown hook, error handling (mainly in strategiy, also for market data)
+- Safeguards, ex: engine config validation, safe exit, shutdown hook, error handling (mainly in strategy, also for market data)
 - Two type of strategy, 
-  - one depends on candle event, which can be backtested
-  - other type depends cant be backtested depends on timely triggered.
+  - one depends on candle event, which can be back-tested
+  - other type depends cant be back-tested depends on timely triggered.
 - evaluation of strategy: not just total return also add risk, volatility, drawdown => sharp ratio
 - logging framework
 - unit test cases 
 - Priority wise:
   - backtest
-    - kite/ coinbase for market data intigration [done]
-    - backtest (candle event synthsize) [done]
+    - kite/ coinbase for market data integration [done]
+    - backtest (candle event synthesize) [done]
     - backtest (save as csv) [done]
     - simple strategy
-    - db (inmemory)
+    - db (in-memory)
     - simple report from db
-  - ml resarch
+  - ml research
   - paper trading
     - mock order service
   - gsheet integration (db)
   - design for web socket
+
+## ToThink
+- how different types of order market, limit during backtest vs real time?
+- backtest with time-event case
