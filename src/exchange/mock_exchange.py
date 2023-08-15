@@ -5,6 +5,7 @@ import random
 from exchange.exchange import Exchange
 from models.candle import Candle
 from models.enums import INTERVAL_TYPE
+from services.market_watch_service import MarketWatchService
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +15,13 @@ class MockExchange(Exchange):
     def is_live(self) -> bool:
         return False
 
-    # has propoties charge = 1.5, exchange_start_time, end_time, timezone todo
+    def set_market_watch_service(self, market_watch_service:MarketWatchService):
+        self.market_watch_service = market_watch_service
+
+    def notify(self, event):
+        pass
+
+    # has properties charge = 1.5, exchange_start_time, end_time, timezone todo
 
     def get_candles(self, symbol: str, inetval: INTERVAL_TYPE, from_time: int, to_time: int) -> list[Candle]:
         candles = []
@@ -29,14 +36,18 @@ class MockExchange(Exchange):
             current_candle_time = current_candle_time + inetval.value
         return candles
 
-    def buy_market(self, symbol: str, quantity: float):
-        pass
+    def buy_market(self, symbol: str, quantity: float) -> str:
+        order_id = '1'
+        return order_id
 
-    def buy_limit(self, symbol: str, quantity: float, price: float):
-        pass
+    def buy_limit(self, symbol: str, quantity: float, price: float) -> str:
+        order_id = '1'
+        return order_id
 
-    def buy_market_sl(self, symbol: str, quantity: float, stop_price: float):
-        pass
+    def buy_market_sl(self, symbol: str, quantity: float, stop_price: float) -> str:
+        order_id = '1'
+        return order_id
 
-    def buy_limit_sl(self, symbol: str, quantity: float, price: float, stop_price: float):
-        pass
+    def buy_limit_sl(self, symbol: str, quantity: float, price: float, stop_price: float) -> str:
+        order_id = '1'
+        return order_id

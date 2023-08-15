@@ -73,3 +73,7 @@ class EngineConfig:
             strategy.set_exchange(exchange)
             strategies.append(strategy)
         return strategies
+
+    def get_mock_exchanges(self) -> list[Exchange]:
+        return [v for k, v in self.engine_config['exchange_configs'].items() if k == EXCAHNGE_TYPE.MOCK_EXCAHNGE
+                or k == EXCAHNGE_TYPE.CSV_EXCHANGE]

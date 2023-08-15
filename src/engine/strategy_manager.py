@@ -1,6 +1,5 @@
 import logging
 
-from models.event_queue import EventQueue
 from services.market_watch_service import MarketWatch
 from services.orderbook_service import OrderBookService
 from strategy.strategy import Strategy
@@ -48,22 +47,20 @@ candle_event_value  =
 
 
 class StrategyManager:
-    def __init__(self, strategies: list[Strategy], event_queue: EventQueue,
+    def __init__(self, strategies: list[Strategy],
                  market_watch: MarketWatch, order_book_service: OrderBookService) -> None:
         self.strategies: list[Strategy] = strategies  # register strategies
         for strategy in self.strategies:
             strategy.set_market_watch(market_watch)
             strategy.set_order_book_service(order_book_service)
             strategy.initialise_record_book()
-        self.event_queue = event_queue
 
-    def notify(self) -> list[Strategy]:
+    def notify(self, event) -> list[Strategy]:
         # notify will run every sec # all_candle_events may come empty,
         # that time check if strategy need to run based on time
         # if its not empty then check for symbol and interval which strategies need to called
         strategies_torun: list[Strategy] = []
         logger.debug("get notified")
-        event = self.event_queue.pull()
         if event is None:
             return []
         logger.debug('event_candles %s %s', event.type, event.value)

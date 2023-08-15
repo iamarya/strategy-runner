@@ -6,6 +6,8 @@ from datetime import datetime
 import traceback
 
 import schedule
+
+from exchange.mock_exchange import MockExchange
 from models.event import CandleEvent
 from models.record_book import RecordBook
 from services.market_watch_service import MarketWatch, MarketWatchService
@@ -33,8 +35,9 @@ class Engine(threading.Thread):
         self.event_queue = EventQueue()
         self.record_book = RecordBook()
         self.order_book_service = OrderBookService(self.record_book)
+        self.inject_market_watch_service_to_mock_exchanges(engine_config.get_mock_exchanges())
         self.strategy_manager = StrategyManager(
-            self.engine_config.get_strategies(), self.event_queue, self.market_watch,
+            self.engine_config.get_strategies(), self.market_watch,
             self.order_book_service)
         self.all_candle_update_details: dict[str, list[CandleUpdateDetail]] = {}
 
@@ -66,8 +69,9 @@ class Engine(threading.Thread):
             synthesized_all_candle_update_details_all_time = \
                 self.market_watch_service.synthesized_all_candle_update_details_all_time()
             for all_candle_update_details_at_time in synthesized_all_candle_update_details_all_time:
-                self.event_queue.push(CandleEvent(all_candle_update_details_at_time))
-                strategies = self.strategy_manager.notify()
+                event = CandleEvent(all_candle_update_details_at_time)
+                self.notify_mock_exchanges(event)
+                strategies = self.strategy_manager.notify(event)
                 for strategy in strategies:
                     self.strategy_manager.run(strategy)
         self.order_book_service.print_record_book()
@@ -76,7 +80,9 @@ class Engine(threading.Thread):
     def run_strategies(self):
         while True:
             current_time = datetime.now()
-            strategies = self.strategy_manager.notify()
+            event = self.event_queue.pull()
+            self.notify_mock_exchanges(event)
+            strategies = self.strategy_manager.notify(event)
             calls = []
             for strategy in strategies:
                 calls.append(threading.Thread(
@@ -214,3 +220,11 @@ class Engine(threading.Thread):
             call.join()  # todo check if any thread failed by returning bool and stop
         logger.debug('Time taken to run get_current_all %s',
                      datetime.now() - current_time)
+
+    def inject_market_watch_service_to_mock_exchanges(self, mock_exchanges: list[MockExchange]):
+        for e in mock_exchanges:
+            e.set_market_watch_service(self.market_watch_service)
+
+    def notify_mock_exchanges(self, event):
+        for exchange in self.engine_config.get_mock_exchanges():
+            exchange.notify(event)
