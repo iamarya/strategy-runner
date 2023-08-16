@@ -14,6 +14,8 @@ from strategy.swing_trading_strategy import SwingTradingStrategy
 # and mock order service
 # paper trade means strategy will use db as in memory/gsheet and mock order service
 # live trade will use gsheet and actual order service
+# Note: same symbol should not be setup for two different exchange until
+# exchange will be part of the dict in market watch
 
 def sample_config():
     return {
@@ -72,6 +74,7 @@ def backtest_config():
                 # add multiple symbols here for same config
                 "symbols": ["BTCUSDT"],
                 "symbol_config": {
+                    # current settings are not processed during backtesting
                     "current_intervals": [],
                     "current_intervals_generated": [],
                     "current_candles_no": 0,
@@ -124,7 +127,6 @@ def csv_config():
         ],
         "strategy_configs": [
             {
-                # will be used for backtest and paper trading
                 "strategy": SwingTradingStrategy(),
                 "db_type": DB_TYPE.IN_MEMORY,  # IN_MEMORY or GSHEET
                 "exchange_type": EXCAHNGE_TYPE.CSV_EXCHANGE

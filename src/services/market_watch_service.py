@@ -146,8 +146,9 @@ class MarketWatchService:
     '''
 
     def synthesized_all_candle_update_details_all_time(self) -> list[dict[str, list[CandleUpdateDetail]]]:
-        # todo simulate synthesized candles to as natural as possible, may with a inserted and a update candle
-        #     to pick the current price and last candle things
+        # todo simulate synthesized candles to as natural as possible, with proper inserted and a update candle
+        #       for all intervals
+        #       to pick the current price and last candle things
         # update candle is the finished one and inserted one is the starting ime, with open price as all prices.
         # it is needed to simulate time based alogos to work
         all_times = pd.Series()
@@ -169,6 +170,7 @@ class MarketWatchService:
                 symbol = item['symbol']
                 candles_for_symbol = []
                 for key in item.keys():
+                    # for each interval
                     if type(key) == INTERVAL_TYPE:
                         df: pd.DataFrame = item[key]
                         try:
