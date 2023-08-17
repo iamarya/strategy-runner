@@ -34,7 +34,7 @@ class MarketWatchService:
                     indicator_columns.extend(indicator.get_columns())
                 all_columns = default_columns + indicator_columns
                 for interval in config.history_intervals() + config.current_intervals() + \
-                        config.history_intervals_generated() + config.current_intervals_generated():
+                                config.history_intervals_generated() + config.current_intervals_generated():
                     df = pd.DataFrame(columns=all_columns)
                     df.set_index("time", inplace=True)
                     mw_item[interval] = df
@@ -225,3 +225,12 @@ class MarketWatchService:
                     f"\n[symbol ={symbol}; last_updated_time = {symbol_mw['last_updated_time']};"
                     f" interval={each_int.name}; ltp = {symbol_mw['ltp']} ]")
                 logger.debug(symbol_mw[each_int])
+
+    def get_price_from_market_watch_on_candle_event(self, symbol: str, ce: dict[str, list[CandleUpdateDetail]]) -> float:
+        # get the interval for this symbol from ces where updated time exist
+        events = ce[symbol]
+        for event in events:
+            if event.inserted:
+                time = event.inserted[-1]
+                df  = self.get_market_watch(symbol)[event.interval]
+                return df.loc[time, 'open']

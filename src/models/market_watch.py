@@ -4,7 +4,7 @@ from models.enums import INTERVAL_TYPE
 
 '''
 Example:
-market_watch = {
+data = {
     "ETH": {
         "symbol": "ETH",
         M5: DataFrame,
