@@ -173,16 +173,20 @@ class MarketWatchService:
                     # for each interval
                     if type(key) == INTERVAL_TYPE:
                         df: pd.DataFrame = item[key]
-                        try:
-                            _ = df.loc[time]
+                        if time in df.index:
+                            # if it exists then get time, it will be inserted time
                             ce = CandleUpdateDetail(symbol, key, False)
                             ce.add_to_inserted(time)
+                            # get previous time that will be updated time
+                            # if previous time does not exist, updated candle will be empty
+                            loc = df.index.get_loc(time)
+                            if loc != 0:
+                                prev_time = df.index[loc - 1]
+                                ce.add_to_updated(prev_time)
                             candles_for_symbol.append(ce)
-                        except KeyError:
-                            pass
                 symbol_dict[symbol] = candles_for_symbol
             all_candle_update_details_all_time.append(symbol_dict)
-            # print(all_candle_update_details_all_time)
+        # print(all_candle_update_details_all_time)
         return all_candle_update_details_all_time
 
     def save_candles_csv(self):
