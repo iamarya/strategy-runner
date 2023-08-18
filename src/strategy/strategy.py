@@ -41,4 +41,5 @@ class Strategy:
         self.order_book_service.initialise_record_book(self.get_name())
 
     def get_name(self):
+        # todo check if for paper separate workbook, not just separate sheet, is_live not needed then
         return self.name_prefix + ('_live' if self.exchange.is_live() else '_paper')

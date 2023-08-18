@@ -4,7 +4,9 @@ import random
 
 from exchange.exchange import Exchange
 from models.candle import Candle
-from models.enums import INTERVAL_TYPE
+from models.candle_update_detail import CandleUpdateDetail
+from models.enums import INTERVAL_TYPE, EVENT_TYPE
+from models.event import Event
 from services.market_watch_service import MarketWatchService
 
 logger = logging.getLogger(__name__)
@@ -12,14 +14,20 @@ logger = logging.getLogger(__name__)
 
 class MockExchange(Exchange):
 
+    def __init__(self):
+        self.current_candle_event: dict[str, list[CandleUpdateDetail]] = None
+
     def is_live(self) -> bool:
         return False
 
     def set_market_watch_service(self, market_watch_service:MarketWatchService):
         self.market_watch_service = market_watch_service
 
-    def notify(self, event):
-        pass
+    def notify(self, event: Event):
+        if event.type == EVENT_TYPE.CANDLE_EVENT:
+            self.current_candle_event = event.value
+        else:
+            self.current_candle_event = None
 
     # has properties charge = 1.5, exchange_start_time, end_time, timezone todo
 

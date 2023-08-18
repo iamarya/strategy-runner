@@ -6,10 +6,12 @@ class Event:
         self.type = type
         self.value = value
 
+
 class CandleEvent(Event):
 
     def __init__(self, value) -> None:
         super().__init__(EVENT_TYPE.CANDLE_EVENT, value)
+
 
 class TimerEvent(Event):
 

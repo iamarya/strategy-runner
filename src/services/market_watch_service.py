@@ -5,12 +5,12 @@ import os
 from indicators.indicator import Indicator
 from models.candle import Candle
 from models.enums import INTERVAL_TYPE
-from models.engine_config import SymbolsConfig
 import pandas as pd
 import numpy as np
 
 from models.candle_update_detail import CandleUpdateDetail
 from models.market_watch import MarketWatch
+from models.symbol_config import SymbolsConfig
 
 logger = logging.getLogger(__name__)
 
