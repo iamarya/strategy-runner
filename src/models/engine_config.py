@@ -1,8 +1,9 @@
-from exchange.exchange import Exchange
 from exchange.mock_exchange import MockExchange
 from models.symbol_config import SymbolsConfig, SymbolConfig
 from strategy.strategy import Strategy
 from models.enums import *
+
+# to-think symbol can conflict, to solve this symbol can have exchange in its name ex; ZE:TCS, BI:BTC, CB:BTC
 
 
 class EngineConfig:

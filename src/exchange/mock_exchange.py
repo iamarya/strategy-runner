@@ -5,8 +5,9 @@ import random
 from exchange.exchange import Exchange
 from models.candle import Candle
 from models.candle_update_detail import CandleUpdateDetail
-from models.enums import INTERVAL_TYPE, EVENT_TYPE
+from models.enums import INTERVAL_TYPE, EVENT_TYPE, ORDER_TYPE, STATE
 from models.event import Event
+from models.record_book import Record
 from services.market_watch_service import MarketWatchService
 
 logger = logging.getLogger(__name__)
@@ -16,11 +17,12 @@ class MockExchange(Exchange):
 
     def __init__(self):
         self.current_candle_event: dict[str, list[CandleUpdateDetail]] = None
+        self.order_book: list[Record] = []
 
     def is_live(self) -> bool:
         return False
 
-    def set_market_watch_service(self, market_watch_service:MarketWatchService):
+    def set_market_watch_service(self, market_watch_service: MarketWatchService):
         self.market_watch_service = market_watch_service
 
     def notify(self, event: Event):
@@ -46,10 +48,14 @@ class MockExchange(Exchange):
 
     def buy_market(self, symbol: str, quantity: float) -> str:
         order_id = '1'
+        # add order to order_book
+        rec = Record(order_id, symbol, ORDER_TYPE.BUY, 0.0, STATE.BUY_PENDING)
+        self.order_book.append(rec)
         return order_id
 
     def buy_limit(self, symbol: str, quantity: float, price: float) -> str:
         order_id = '1'
+
         return order_id
 
     def buy_market_sl(self, symbol: str, quantity: float, stop_price: float) -> str:

@@ -8,9 +8,9 @@ class Record:
     def __repr__(self):
         return f'\n{self.order_type} {self.price} {self.state} {self.closed}'
 
-    def __init__(self, symbol, order_type, price, state):
+    def __init__(self, id, symbol, order_type, price, state):
         self.row_no = None
-        self.id = None
+        self.id = id
         self.parent_id = None
         self.meta_id = None
         self.symbol = symbol
