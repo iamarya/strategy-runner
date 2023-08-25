@@ -38,9 +38,9 @@ def get_action(records: list[Record]):
     for record in records:
         if record.closed:
             continue
-        if record.order_type == ORDER_TYPE.BUY:
+        if record.order_type == TRANSACTION_TYPE.BUY:
             buy_record = record
-        if record.order_type == ORDER_TYPE.SELL:
+        if record.order_type == TRANSACTION_TYPE.SELL:
             sell_record = record
     if buy_record is None:
         return ACTION.BUY

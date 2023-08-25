@@ -8,28 +8,26 @@ class Record:
     def __repr__(self):
         return f'\n{self.order_type} {self.price} {self.state} {self.closed}'
 
-    def __init__(self, id, symbol, order_type, price, state):
-        self.row_no = None
+    def __init__(self, id, symbol, transaction_type, order_type, state, created_at, updated_at, quantity,
+                 row_no=None, parent_id=None, meta_id=None, price=None, limit_price=None, stop_price=None,
+                 cost=None, profit=None):
+        self.row_no = row_no
         self.id = id
-        self.parent_id = None
-        self.meta_id = None
+        self.parent_id = parent_id
+        self.meta_id = meta_id
         self.symbol = symbol
-        self.order_type = order_type  # buy, sell, sl
-        self.created_at = None
-        self.updated_at = None
-        self.quantity = None
-        self.price = price
-        self.trigger_price = None
-        self.cost = None
-        self.profit = None
-        self.state = state  # pending, completed, canceled, closed
+        self.transaction_type = transaction_type # buy, sell, sl
+        self.order_type = order_type  # market, limit, sl-market, sl_limit
+        self.created_at = created_at
+        self.updated_at = updated_at
+        self.quantity = quantity
+        self.price = price # actual order executed price
+        self.limit_price = limit_price # limit price
+        self.stop_price = stop_price
+        self.cost = cost
+        self.profit = profit
+        self.state = state  # pending, completed, canceled
         self.closed = False
-        # self.exchange = None # to track it for paper trading or actual
-
-
-
-
-
 
 
 class RecordBook:

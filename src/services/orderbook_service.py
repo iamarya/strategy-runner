@@ -1,4 +1,4 @@
-from models.enums import ORDER_TYPE, STATE
+from models.enums import TRANSACTION_TYPE, STATE
 from models.record_book import RecordBook, Record
 
 
@@ -22,13 +22,16 @@ class OrderBookService:
 
     def buy(self, exchange, db, strategy_name: str, symbol_to_trade, buy_price):
         id = exchange.buy_market(symbol_to_trade, 1)
+        # todo use the record_book also in exchange and dont use separate order_book to hold same duplicate data
+        #  think hot use same record_book and get the details and update the record_book
+        #  if it will be complex then use separate order_book
         records = self.record_book.get(strategy_name)
-        records.append(Record(id, symbol_to_trade, ORDER_TYPE.BUY, buy_price, STATE.BUY_CONFIRMED))
+        records.append(Record(id, symbol_to_trade, TRANSACTION_TYPE.BUY, buy_price, STATE.CONFIRMED, 'cd', 'ud', 1))
 
     def sell(self, exchange, db, strategy_name, symbol_to_trade, sell_price):
         id = exchange.buy_market(symbol_to_trade, 1)
         records = self.record_book.get(strategy_name)
-        records.append(Record(id, symbol_to_trade, ORDER_TYPE.SELL, sell_price, STATE.SELL_CONFIRMED))
+        records.append(Record(id, symbol_to_trade, TRANSACTION_TYPE.SELL, sell_price, STATE.CONFIRMED, 'cd', 'ud', 1))
 
     def mark_close(self, exchange, db, strategy_name, symbol_to_trade):
         records = self.record_book.get(strategy_name)

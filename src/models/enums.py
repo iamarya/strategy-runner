@@ -40,23 +40,23 @@ class EVENT_TYPE(Enum):
     TIMER_EVENT = 2
 
 
-class ORDER_TYPE(Enum):
+class TRANSACTION_TYPE(Enum):
     BUY = 1
     SELL = 2
     SL = 3
 
+class ORDER_TYPE(Enum):
+    MARKET = 1
+    LIMIT = 2
+    SL_MARKET = 3
+    SL_LIMIT = 4
+
 
 class STATE(Enum):
-    START = 1
-    BUY_PENDING = 2
-    BUY_CONFIRMED = 3
-    BUY_CANCELED = 4
-    SELL_PENDING = 5
-    SELL_CONFIRMED = 6
-    SELL_CANCELED = 7
+    PENDING = 2
+    CONFIRMED = 3
+    CANCELED = 4
     EXITED = 8
-    SL_TRIGGERED = 9
-    END = 10
 
 
 class ACTION(Enum):

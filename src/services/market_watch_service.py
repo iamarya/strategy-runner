@@ -232,5 +232,5 @@ class MarketWatchService:
         for event in events:
             if event.inserted:
                 time = event.inserted[-1]
-                df  = self.get_market_watch(symbol)[event.interval]
+                df = self.get_market_watch(symbol)[event.interval]
                 return df.loc[time, 'open']
