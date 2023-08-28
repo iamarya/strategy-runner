@@ -7,7 +7,6 @@ from models.candle import Candle
 from models.candle_update_detail import CandleUpdateDetail
 from models.enums import INTERVAL_TYPE, EVENT_TYPE, TRANSACTION_TYPE, STATE, ORDER_TYPE
 from models.event import Event
-from models.record_book import Record
 from services.market_watch_service import MarketWatchService
 import random
 
@@ -16,12 +15,6 @@ logger = logging.getLogger(__name__)
 
 def generate_id():
     return str(random.randint(10000, 99999))
-
-
-def get_time_from_candle_event(current_candle_events: list[CandleUpdateDetail]) -> int:
-    for event in current_candle_events:
-        if event.inserted:
-            return event.inserted[-1]
 
 
 class MockExchange(Exchange):
@@ -35,7 +28,15 @@ class MockExchange(Exchange):
     def set_market_watch_service(self, market_watch_service: MarketWatchService):
         self.market_watch_service = market_watch_service
 
+    def get_curr_time_from_candle_event(self, symbol) -> int:
+        current_candle_events = self.current_candle_event.get(symbol)
+        for event in current_candle_events:
+            if event.inserted:
+                return event.inserted[-1]
+
     def notify(self, event: Event):
+        # it is used to get current timestamp for order creation and using which it can be checked if the
+        # order is executed or not.
         if event.type == EVENT_TYPE.CANDLE_EVENT:
             self.current_candle_event = event.value
         else:

@@ -43,7 +43,6 @@ class EVENT_TYPE(Enum):
 class TRANSACTION_TYPE(Enum):
     BUY = 1
     SELL = 2
-    SL = 3
 
 class ORDER_TYPE(Enum):
     MARKET = 1

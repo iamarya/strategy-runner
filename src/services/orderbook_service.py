@@ -5,7 +5,7 @@ from models.record_book import RecordBook, Record
 class OrderBookService:
 
     def __init__(self, record_book: RecordBook):
-        self.record_book = record_book
+        self.record_book:RecordBook = record_book
 
     def initialise_record_book(self, strategy_name: str):
         records = []  # todo get it from db
@@ -27,6 +27,15 @@ class OrderBookService:
         #  if it will be complex then use separate order_book
         records = self.record_book.get(strategy_name)
         records.append(Record(id, symbol_to_trade, TRANSACTION_TYPE.BUY, buy_price, STATE.CONFIRMED, 'cd', 'ud', 1))
+
+    def buy_market(self, exchange, db, strategy_name: str, symbol_to_trade, buy_price):
+        # create order request
+        # call buy on exchange which will return order response
+        # get orderid and order creation ts and store into records
+        # other methods will be sell_market, sell_sl_market
+        # buy_limit, sell_limit, sell_sl_limit
+        # todo question? when to update the status of order. every notify call? or separate thread? or something else?
+        pass
 
     def sell(self, exchange, db, strategy_name, symbol_to_trade, sell_price):
         id = exchange.buy_market(symbol_to_trade, 1)

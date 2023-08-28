@@ -9,7 +9,7 @@ class Record:
         return f'\n{self.order_type} {self.price} {self.state} {self.closed}'
 
     def __init__(self, id, symbol, transaction_type, order_type, state, created_at, updated_at, quantity,
-                 row_no=None, parent_id=None, meta_id=None, price=None, limit_price=None, stop_price=None,
+                 row_no=None, parent_id=None, meta_id=None, price=None, limit_price=None, trigger_price=None,
                  cost=None, profit=None):
         self.row_no = row_no
         self.id = id
@@ -23,7 +23,7 @@ class Record:
         self.quantity = quantity
         self.price = price # actual order executed price
         self.limit_price = limit_price # limit price
-        self.stop_price = stop_price
+        self.trigger_price = trigger_price
         self.cost = cost
         self.profit = profit
         self.state = state  # pending, completed, canceled
