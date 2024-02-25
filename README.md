@@ -10,7 +10,7 @@
 ## Features
 - Backtesting
 - Papaer trading
-- Live trading
+- Live trading (Future)
 
 ## License
 >You can check out the full license [here](https://github.com/iamarya/strategy-runner/blob/master/LICENSE)
