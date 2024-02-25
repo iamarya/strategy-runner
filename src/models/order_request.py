@@ -1,5 +1,12 @@
+"""Module providing a function printing python version."""
+from dataclasses import dataclass
+
+@dataclass
 class OrderRequest:
-    def __int__(self, quantity, price, order_type, transaction_type, trigger_price):
+    """Class representing a person"""
+
+    def __init__(self, quantity, price, order_type, transaction_type, trigger_price):
+        """Class representing a __init__"""
         self.quantity = quantity
         self.price = price
         self.order_type = order_type
