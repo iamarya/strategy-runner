@@ -8,19 +8,22 @@ from models.candle_update_detail import CandleUpdateDetail
 from models.enums import INTERVAL_TYPE, EVENT_TYPE, TRANSACTION_TYPE, STATE, ORDER_TYPE
 from models.event import Event
 from services.market_watch_service import MarketWatchService
-import random
 
 logger = logging.getLogger(__name__)
 
 
 def generate_id():
+    """
+    generate the id using the symbol, timeframe, timestamp, so that using order id it
+    can be caluated if the order is executed or not.
+    """
     return str(random.randint(10000, 99999))
 
 
 class MockExchange(Exchange):
 
     def __init__(self):
-        self.current_candle_event: dict[str, list[CandleUpdateDetail]] = None
+        self.current_candle_event: dict[str, list[CandleUpdateDetail]]|None = None
 
     def is_live(self) -> bool:
         return False
@@ -35,8 +38,9 @@ class MockExchange(Exchange):
                 return event.inserted[-1]
 
     def notify(self, event: Event):
-        # it is used to get current timestamp for order creation and using which it can be checked if the
-        # order is executed or not.
+        """it is used to get current timestamp for order creation and using which it
+        can be checked if the order is executed or not.
+        """
         if event.type == EVENT_TYPE.CANDLE_EVENT:
             self.current_candle_event = event.value
         else:

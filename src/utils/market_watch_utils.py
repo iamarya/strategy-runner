@@ -10,7 +10,7 @@ def get_source_interval_for_candle_generation(
         if item == target_interval:
             found = True
             continue
-        if found == True and all_intervals.count(item) > 0:
+        if found is True and all_intervals.count(item) > 0:
             return item
     raise ValueError(
         "get_source_interval_for_candle_generation", target_interval)
