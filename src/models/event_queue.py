@@ -1,6 +1,5 @@
 from queue import Queue
 
-from models.candle_update_detail import CandleUpdateDetail
 from models.event import Event
 
 
@@ -14,8 +13,8 @@ class EventQueue:
         self.q.put(event, block=True)
 
     # return the event, non-blocking
-    def pull(self) -> Event|None:
-        try:
-            return self.q.get_nowait()  # may raise Empty exception.
-        except:
-            return None
+    # update: changed to blocking as there will be no strategy run if no event. 
+    #   earlier it was needed as if no candle event, still may need to run strategy for timmer.
+    def pull(self) -> Event|None: 
+        # block until get an event
+        return self.q.get()  # changed form get_nowait which raise Empty exception.

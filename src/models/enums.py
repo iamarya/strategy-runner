@@ -34,7 +34,8 @@ class DB_TYPE(Enum):
     def __repr__(self) -> str:
         return self.name
 
-
+# todo: event type can be removed, as timer event is not needed.
+# all events are candle event and "TIMER" candle will be created. From event also type will be removed.
 class EVENT_TYPE(Enum):
     CANDLE_EVENT = 1
     TIMER_EVENT = 2

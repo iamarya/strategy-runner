@@ -14,3 +14,7 @@
 
 ## License
 >You can check out the full license [here](https://github.com/iamarya/strategy-runner/blob/master/LICENSE)
+
+# Clean environment
+pip freeze | grep -v -f requirements.txt - | grep -v '^#' | xargs pip uninstall -y
+pip install -r requirements.txt

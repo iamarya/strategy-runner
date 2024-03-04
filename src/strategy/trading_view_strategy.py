@@ -11,8 +11,8 @@ from strategy.strategy import Strategy
 logger = logging.getLogger(__name__)
 
 # need to create a config kind of object
-symbol_to_trade = 'BTCUSDT'  # can be list for some strategy
-interval = INTERVAL_TYPE.M15
+symbol_to_trade = 'TIME'  # can be list for some strategy
+interval = INTERVAL_TYPE.S5
 indicators = ("sma_9", "sma_21")
 buy_window = ('', '')
 sell_window = ('', '')
@@ -49,7 +49,7 @@ def get_action(records: list[Record]):
     logger.debug(f'buy_record is {buy_record} and sell_record is {sell_record}')
 
 
-class SwingTradingStrategy(Strategy):
+class TradingViewStrategy(Strategy):
 
     def __init__(self) -> None:
         Strategy.__init__(self, 'swing_trading_strategy')
@@ -75,12 +75,7 @@ class SwingTradingStrategy(Strategy):
         if index_of_current_time == 0:
             return  # 1st candle no previous so exit
         time = df.iloc[index_of_current_time - 1].name
-        cols = df.columns.to_list()
-        if indicators[0] not in cols or indicators[1] not in cols:
-            logger.debug('sma_low or sma_high col not there')
-            return
-        sma_low = df.loc[time][indicators[0]]
-        sma_high = df.loc[time][indicators[1]]
+        
         price = df.loc[time]['close']
         records = self.order_book_service.get_records(self.get_name())
         action = get_action(records)

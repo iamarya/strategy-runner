@@ -191,6 +191,7 @@ class MarketWatchService:
 
     def save_candles_csv(self):
         # csv per symbol, per interval 
+        # todo: change path to ./tmp as app runs outside src directory
         if not os.path.exists('../tmp'):
             os.makedirs('../tmp')
         for item in self.market_watch.data.values():
