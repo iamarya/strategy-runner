@@ -29,6 +29,7 @@ class Engine(threading.Thread):
         threading.Thread.__init__(self, name="engine_thread", daemon=True)
         self.engine_config = engine_config
         self.market_watch = MarketWatch()
+        # todo: create record-book and inject to all dbs
         self.market_watch_service = MarketWatchService(self.engine_config.get_symbols_configs(),
                                                        self.market_watch)
         self.quote_service = QuoteService()

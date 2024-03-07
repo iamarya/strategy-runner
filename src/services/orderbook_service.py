@@ -20,6 +20,7 @@ class OrderBookService:
     def print_record_book(self):
         self.record_book.print_record_book()
 
+    # instead sending exchange, db, strategy name, can send the strategy itself: not now later
     def buy(self, exchange, db, strategy_name: str, symbol_to_trade, buy_price):
         id = exchange.buy_market(symbol_to_trade, 1)
         # todo use the record_book also in exchange and dont use separate order_book to hold same duplicate data

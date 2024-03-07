@@ -34,3 +34,12 @@ which strategy needs what symbol or send each symbol then strategy decides if ne
 ## ToThink
 - how different types of order market, limit during backtest vs real time?
 - backtest with time-event case
+
+## ToDo (later, not now)
+- serivices will be stateful and singleton
+  - service(order-service) -> router(order-router) -> entity(exchange)
+  - quoteservice, orderservice and record service will have router
+  - marketwatch service will not have router as only one marketwatch enity
+- entities like marketwatch, exchange/s, db/s will be singleton but stateful.
+- StrategyConfig will passed to get exchange and db to order_service and record_serivice.
+- OrderState may be use to pass metadata about a order like time, order execution reason...
